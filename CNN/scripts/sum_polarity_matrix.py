@@ -5,6 +5,9 @@ import cv2
 import numpy as np
 import random
 import pandas as pd
+from pandas.tools.plotting import table
+import matplotlib.pyplot as plt
+#import seaborn as sns; sns.set()
 #import scipy.misc
 
 class Events(object):
@@ -299,11 +302,33 @@ if __name__ == '__main__':
 
     #drop old p, drop duplicates, and reset dataframe index
     df2=df1.drop(['p'],axis=1).drop_duplicates(subset=['x', 'y','sum_p']).reset_index(drop=True)
-    print(df2)
 
-
-    #check ranges of x,y and sum_p
+    #check ranges of x,y and sum_p #sanitycheck
     print(max(df2['x']))
     print(max(df2['y']))
     print(min(df2['sum_p']))
     print(max(df2['sum_p']))
+
+
+    #prepopulate 34x34 matrix with zeros
+    A = np.zeros(shape=(34,34))
+
+    #convert dataframe to np array B to allow easier indexing
+    B=df2.values
+
+    #fit B into A so that A(x,y)=p
+    for row in B:
+        A[row[1]][row[0]]=row[2]
+
+    #convert back to dataframe
+    pd.set_option('display.max_rows',None)
+    dfA=pd.DataFrame(A)
+    print(dfA)
+
+    #compare with B: #sanitycheck
+    #print(B)
+
+#--------------------------------------------------------------
+    #visualize
+    #plt.imshow(dfA, cmap='hot', interpolation='nearest')
+    #plt.savefig('mytable.png')
