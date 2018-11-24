@@ -12,3 +12,13 @@ Don't be scared to send personal emails to Yiannis asking questions and what not
 
 
 Always keep in mind - the title of our project is Low Power Action recognition - keep in mind how compression is helping achieve the objective of the project, (in this case auto-encoding would mimic the easier file transfer from the DVS camera to the portable system in an efficient way). Everytime you see that something from this autoencoder can help achieve our objectives right it down and pivot towards that objective.
+
+
+References:
+https://blog.keras.io/building-autoencoders-in-keras.html  -  Building autoencoders in Keras
+https://github.com/keras-team/keras/blob/master/examples/variational_autoencoder.py
+https://github.com/llSourcell/autoencoder_explained/blob/master/variational_autoencoder.py
+https://github.com/tawheeler/2017_iv_deep_radar/blob/master/VAE.py   -    examples of the VAE
+http://deeplearning.buzz/2017/06/01/what-is-batch-size-and-epoch-in-neural-network/   -   batch sizes and epochs explained
+https://towardsdatascience.com/deep-inside-autoencoders-7e41f319999f    -    Deep inside: Autoencoders
+https://towardsdatascience.com/applied-deep-learning-part-3-autoencoders-1c083af4d798    -     Applied Deep Learning - Part 3: Autoencoders
