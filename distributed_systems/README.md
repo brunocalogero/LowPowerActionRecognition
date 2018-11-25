@@ -12,7 +12,7 @@ I've added a nice little bash script to run things faster under `scripts`:
 
 #### Usage:
 
-- Load up the `run_type.sh` (make sure you `sudo chmod 777` this one) and `script.py` files inside the frontier source directory.
+- Load up the `run_type.sh` (make sure you `sudo chmod 777` this one) file inside the frontier source directory __and__ load up `script.py` in the `seep-system/src/main/resources` directory.
 - Usage:
   - `./run_type.sh build <master_ip_address>` - the user chooses what ip address to insert for the master.
   - `./run_type.sh master>` - this will run the node as the master
