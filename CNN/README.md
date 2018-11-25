@@ -28,3 +28,8 @@ Different Steps that we have in mind:
 
 RESEARCH PAPERS USED:
 https://www.frontiersin.org/articles/10.3389/fnins.2015.00437/full (some notes taken on evernote)
+
+
+=====
+
+Added bash script to run things faster (easy to pull)

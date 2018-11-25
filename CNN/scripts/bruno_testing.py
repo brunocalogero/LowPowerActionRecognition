@@ -256,3 +256,6 @@ if __name__ == '__main__':
     data_set_path = '/Users/bcaloger/Desktop/LowPowerActionRecognition/CNN/datasets/Train/0/00002.bin'
     # X_train, y_train, X_test, y_test = load_NMNIST(data_set_path)
     td = read_dataset(data_set_path)
+    print td.data.y[:10]
+    print td.data.x[:10]
+    print td.data.p[:10]
