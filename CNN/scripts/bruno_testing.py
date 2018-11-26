@@ -1,8 +1,8 @@
-
 import os
-import glob
 import cv2
 import numpy as np
+import random
+import pandas as pd
 
 
 class Events(object):
@@ -250,12 +250,95 @@ def read_dataset(filename):
     return td
 
 
-
 if __name__ == '__main__':
 
-    data_set_path = '/Users/bcaloger/Desktop/LowPowerActionRecognition/CNN/datasets/Train/0/00002.bin'
-    # X_train, y_train, X_test, y_test = load_NMNIST(data_set_path)
-    td = read_dataset(data_set_path)
-    print td.data.y[:10]
-    print td.data.x[:10]
-    print td.data.p[:10]
+    # input dataset class_path
+    dataset_class_path = '/Users/bcaloger/Desktop/LowPowerActionRecognition/CNN/datasets'
+
+    for class_index in range(0, 10):
+
+        new_dirname = '{0}/n_Train/{1}'.format(dataset_class_path, class_index)
+
+        # for every different class create a folder:
+        # Create target directory & all intermediate directories if don't exists
+        if not os.path.exists(new_dirname):
+            os.makedirs(new_dirname)
+            print("Directory ", new_dirname,  " Created ")
+        else:
+            print("Directory ", new_dirname,  " already exists")
+
+        print "Looping over class: {0}".format(class_index)
+
+        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Train'.format(dataset_class_path), str(class_index))):
+
+            for counter, filename in enumerate(binary_files):
+
+                print "Converting bin file {0}/{1}".format(counter, len(binary_files))
+
+                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+
+                t_min = np.min(td.data.ts) + 200000
+                t_max = np.max(td.data.ts) - 200000
+
+                # Randomly selected a t_r value b/w the range. We only interested in the values stored in the period t_r and t_ru
+                t_r = random.uniform(t_min, t_max)
+                t_ru = t_r + 100000
+
+                # index_need and index_need2 are the lower and upper indexes
+                i_low = np.argmin(np.abs(td.data.ts - t_r))
+                i_up = np.argmin(np.abs(td.data.ts - t_ru))
+
+                x = list()
+                y = list()
+                p = list()
+
+                for index in range(i_low, i_up):
+                    x.append(td.data.x[index])
+                    y.append(td.data.y[index])
+                    p.append(td.data.p[index])
+
+                for (i, item) in enumerate(p):
+                    if item is True:
+                        p[i] = 1
+                    else:
+                        p[i] = -1
+
+                # create a dataframe x,y,p out of the 3 lists
+                df = pd.DataFrame({'x': x, 'y': y, 'p': p})
+
+                # sort by x and y
+                df1 = df.sort_values(['x', 'y'])
+                pd.set_option('display.max_rows', None)
+
+                # group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
+                df1['sum_p'] = df1.groupby(['x', 'y'])['p'].transform(sum)
+
+                # drop old p, drop duplicates, and reset dataframe index
+                df2 = df1.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
+
+                # sanitycheck
+                #check ranges of x,y and sum_p
+                #print(max(df2['x']))
+                #print(max(df2['y']))
+                #print(min(df2['sum_p']))
+                #print(max(df2['sum_p']))
+
+                # prepopulate 34x34 matrix with zeros (conversion to int32 for later use of fromfile)
+                A = np.zeros(shape=(34,34), dtype=np.int32)
+
+                # convert dataframe to np array B to allow easier indexing
+                B = df2.values
+
+                # fit B into A so that A(x,y)=p
+                for row in B:
+                    A[row[1]][row[0]] = row[2]
+
+                # convert back to dataframe
+                pd.set_option('display.max_rows', None)
+                dfA = pd.DataFrame(A)
+                # print(dfA)
+
+                # remove .bin
+                filename_value = filename[:-4]
+
+                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value))
