@@ -259,105 +259,74 @@ def read_dataset(filename):
 
 if __name__ == '__main__':
 
-    #data_set_path = 'C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/0/00002.bin'
-    #td = read_dataset(data_set_path)
-
-    #creates a list f that contains local directory
     f = []
-    filename1=0
-    for (dirpath, dirnames, filename2) in walk('C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/'+str(filename1)):
-        f.extend(filename2)
-        break
+    test=0
+    for (dirpath, dirnames, filename) in walk('C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/0'):
+        f.extend(filename)
 
-        for filename2 in f:
+    for filename in f:
 
-            test+=1
-            td = read_dataset('C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/'+str(filename1)+'/'+filename2)
-            #print(td.height)
-            #test+=1
-            t_min = np.min(td.data.ts) + 200000
-            t_max = np.max(td.data.ts) - 200000
-            # Randomly selected a t_r value b/w the range. We only interested in the values stored in the period t_r and t_ru
-            t_r = random.uniform(t_min,t_max)
-            t_ru = t_r + 100000
-            #print(t_r,t_ru)
-            # index_need and index_need2 are the lower and upper indexes
-            i_low = np.argmin(np.abs(td.data.ts - t_r))
-            i_up = np.argmin(np.abs(td.data.ts - t_ru))
+        td = read_dataset('C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/0/'+filename)
+        t_min = np.min(td.data.ts) + 200000
+        t_max = np.max(td.data.ts) - 200000
+        # Randomly selected a t_r value b/w the range. We only interested in the values stored in the period t_r and t_ru
+        t_r = random.uniform(t_min,t_max)
+        t_ru = t_r + 100000
+        # index_need and index_need2 are the lower and upper indexes
+        i_low = np.argmin(np.abs(td.data.ts - t_r))
+        i_up = np.argmin(np.abs(td.data.ts - t_ru))
 
-            #print(len(range(i_low,i_up)))
-            x=[]
-            y=[]
-            p=[]
-            for index in range(i_low,i_up):
-                x.append(td.data.x[index])
-                y.append(td.data.y[index])
-                p.append(td.data.p[index])
+        x=[]
+        y=[]
+        p=[]
+        for index in range(i_low,i_up):
+            x.append(td.data.x[index])
+            y.append(td.data.y[index])
+            p.append(td.data.p[index])
 
-            for (i,item) in enumerate(p):
-                if item == True:
-                    p[i] = 1
-                else:
-                    p[i] = -1
+        for (i,item) in enumerate(p):
+            if item == True:
+                p[i] = 1
+            else:
+                p[i] = -1
 
+         #create a dataframe x,y,p out of the 3 lists
+        df=pd.DataFrame({'x':x,'y':y,'p':p})
 
-             #create a dataframe x,y,p out of the 3 lists
-            df=pd.DataFrame({'x':x,'y':y,'p':p})
+        #sort by x and y
+        df1=df.sort_values(['x','y'])
+        pd.set_option('display.max_rows',None)
 
-            #sort by x and y
-            df1=df.sort_values(['x','y'])
-            pd.set_option('display.max_rows',None)
+        #group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
+        df1['sum_p'] = df1.groupby(['x','y'])['p'].transform(sum)
 
-            #group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
-            df1['sum_p'] = df1.groupby(['x','y'])['p'].transform(sum)
+        #drop old p, drop duplicates, and reset dataframe index
+        df2=df1.drop(['p'],axis=1).drop_duplicates(subset=['x', 'y','sum_p']).reset_index(drop=True)
 
-            #drop old p, drop duplicates, and reset dataframe index
-            df2=df1.drop(['p'],axis=1).drop_duplicates(subset=['x', 'y','sum_p']).reset_index(drop=True)
+        #check ranges of x,y and sum_p #sanitycheck
+        #print(max(df2['x']))
+        #print(max(df2['y']))
+        #print(min(df2['sum_p']))
+        #print(max(df2['sum_p']))
 
-            #check ranges of x,y and sum_p #sanitycheck
-            #print(max(df2['x']))
-            #print(max(df2['y']))
-            #print(min(df2['sum_p']))
-            #print(max(df2['sum_p']))
+        #prepopulate 34x34 matrix with zeros
+        A = np.zeros(shape=(34,34))
 
-            #prepopulate 34x34 matrix with zeros
-            A = np.zeros(shape=(34,34))
+        #convert dataframe to np array B to allow easier indexing
+        B=df2.values
 
-            #convert dataframe to np array B to allow easier indexing
-            B=df2.values
+        #fit B into A so that A(x,y)=p
+        for row  in B:
+            A[row[1]][row[0]]=row[2]
 
-            #fit B into A so that A(x,y)=p
-            for row in B:
-                A[row[1]][row[0]]=row[2]
+        #convert back to dataframe
+        pd.set_option('display.max_rows',None)
+        dfA=pd.DataFrame(A)
+        print(dfA)
 
-            #convert back to dataframe
-            pd.set_option('display.max_rows',None)
-            dfA=pd.DataFrame(A)
-            print(dfA)
-
-            #visualize
-            plt.imshow(dfA, cmap='hot', interpolation='nearest')
-            plt.savefig("mytable"+filenames+".png")
-
-        if test >= len(f)+1:
-            print("iterations "+str(test)+"/"+str(len(f)))
-            filename1 += 1
-            test=0
-
-            if filename1 == 10:
-                break
-        if test == 3:
-            print("hello dawgz")
-            print("iterations "+str(test)+"/"+str(len(f)))
-            break
-        #print(len(f))
-        #print(test)
-
-        #for i in range(10)
-            #string to list
-            #data_set_path = to string 'C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/i/00002.bin'
-
-        #address_list = list('C:/Users/millir/Desktop/4th Year Project/LowPowerActionRecognition/CNN/datasets/Train/Train/0/00002.bin')[-11:-10]
-        #data_set_path = ''.join(address_list)
-        #td = read_dataset(data_set_path)
-        #print(td.width)
+        #visualize
+        #plt.imshow(dfA, cmap='hot', interpolation='nearest')
+        #plt.savefig("mytable"+filename+".png")
+        A.tofile(filename+'.dat')
+        test+=1
+        print("iterations "+str(test)+"/"+str(len(f)))
