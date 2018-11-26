@@ -330,5 +330,3 @@ if __name__ == '__main__':
         A.tofile(filename+'.dat')
         test+=1
         print("iterations "+str(test)+"/"+str(len(f)))
-
-        
