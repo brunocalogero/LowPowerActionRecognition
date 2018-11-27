@@ -303,40 +303,44 @@ if __name__ == '__main__':
                     else:
                         p[i] = -1
 
-                # create a dataframe x,y,p out of the 3 lists
-                df = pd.DataFrame({'x': x, 'y': y, 'p': p})
+                # create a dataframe out of the three lists
+                df = pd.DataFrame({'x': x,'y': y,'p': p})
+
+                # display options
+                pd.set_option('display.max_rows',None)
+                np.set_printoptions(threshold=np.nan)
 
                 # sort by x and y
                 df1 = df.sort_values(['x', 'y'])
-                pd.set_option('display.max_rows', None)
+
+                # divide data into two dataframes, for +ve and -ve values.
+                df1_neg = df1[df1.iloc[:,2]<0]
+                df1_pos = df1[df1.iloc[:,2]>0]
 
                 # group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
-                df1['sum_p'] = df1.groupby(['x', 'y'])['p'].transform(sum)
+                df1_neg['sum_p'] = df1_neg.groupby(['x', 'y'])['p'].transform(sum)
+                df1_pos['sum_p'] = df1_pos.groupby(['x', 'y'])['p'].transform(sum)
 
                 # drop old p, drop duplicates, and reset dataframe index
-                df2 = df1.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
+                df_neg = df1_neg.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
+                df_pos = df1_pos.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
 
-                # sanitycheck
-                #check ranges of x,y and sum_p
-                #print(max(df2['x']))
-                #print(max(df2['y']))
-                #print(min(df2['sum_p']))
-                #print(max(df2['sum_p']))
+                # convert negative values to absolute
+                df_neg['sum_p'] = df_neg['sum_p'].abs()
 
-                # prepopulate 34x34 matrix with zeros (conversion to int32 for later use of fromfile)
-                A = np.zeros(shape=(34,34), dtype=np.int32)
+                # prepopulate 34x34x2 matrix with zeros (conversion to int32 for later use of fromfile)
+                A = np.zeros(shape=(2,34,34), dtype=np.int32)
 
-                # convert dataframe to np array B to allow easier indexing
-                B = df2.values
+                # convert dataframe to np arrays B_neg and B_pos to allow easier indexing
+                B_neg = df_neg.values
+                B_pos = df_pos.values
 
                 # fit B into A so that A(x,y)=p
-                for row in B:
-                    A[row[1]][row[0]] = row[2]
-
-                # convert back to dataframe
-                pd.set_option('display.max_rows', None)
-                dfA = pd.DataFrame(A)
-                # print(dfA)
+                # B_pos -> A[1] and B_neg -> A[0]
+                for row in B_neg:
+                    A[0][row[1]][row[0]]=row[2]
+                for row in B_pos:
+                    A[1][row[1]][row[0]]=row[2]
 
                 # remove .bin
                 filename_value = filename[:-4]
