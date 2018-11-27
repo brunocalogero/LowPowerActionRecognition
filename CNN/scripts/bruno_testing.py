@@ -231,13 +231,13 @@ def read_dataset(filename):
     all_p = (raw_data[2::5] & 128) >> 7 #bit 7
     all_ts = ((raw_data[2::5] & 127) << 16) | (raw_data[3::5] << 8) | (raw_data[4::5])
 
-    #Process time stamp overflow events
+    # Process time stamp overflow events
     time_increment = 2 ** 13
     overflow_indices = np.where(all_y == 240)[0]
     for overflow_index in overflow_indices:
         all_ts[overflow_index:] += time_increment
 
-    #Everything else is a proper td spike
+    # Everything else is a proper td spike
     td_indices = np.where(all_y != 240)[0]
 
     td = Events(td_indices.size, 34, 34)
@@ -257,7 +257,7 @@ if __name__ == '__main__':
 
     for class_index in range(0, 10):
 
-        new_dirname = '{0}/n_Train/{1}'.format(dataset_class_path, class_index)
+        new_dirname = '{0}/n_Test/{1}'.format(dataset_class_path, class_index)
 
         # for every different class create a folder:
         # Create target directory & all intermediate directories if don't exists
@@ -269,13 +269,13 @@ if __name__ == '__main__':
 
         print "Looping over class: {0}".format(class_index)
 
-        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Train'.format(dataset_class_path), str(class_index))):
+        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Test'.format(dataset_class_path), str(class_index))):
 
             for counter, filename in enumerate(binary_files):
 
                 print "Converting bin file {0}/{1}".format(counter, len(binary_files))
 
-                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+                td = read_dataset('{0}/Test/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
 
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
@@ -315,13 +315,6 @@ if __name__ == '__main__':
 
                 # drop old p, drop duplicates, and reset dataframe index
                 df2 = df1.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
-
-                # sanitycheck
-                #check ranges of x,y and sum_p
-                #print(max(df2['x']))
-                #print(max(df2['y']))
-                #print(min(df2['sum_p']))
-                #print(max(df2['sum_p']))
 
                 # prepopulate 34x34 matrix with zeros (conversion to int32 for later use of fromfile)
                 A = np.zeros(shape=(34,34), dtype=np.int32)
