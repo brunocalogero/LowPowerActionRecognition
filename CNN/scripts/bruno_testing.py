@@ -280,64 +280,70 @@ if __name__ == '__main__':
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
 
-                # Randomly selected a t_r value b/w the range. We only interested in the values stored in the period t_r and t_ru
-                t_r = random.uniform(t_min, t_max)
+                #randomly selected a t_r value b/w the range. We're only interested in the values stored in the period t_r to t_ru
+                t_r = random.uniform(t_min,t_max)
                 t_ru = t_r + 100000
 
-                # index_need and index_need2 are the lower and upper indexes
+                # i_low and i_up are the lower and upper indexes
                 i_low = np.argmin(np.abs(td.data.ts - t_r))
                 i_up = np.argmin(np.abs(td.data.ts - t_ru))
 
-                x = list()
-                y = list()
-                p = list()
+                x=[]
+                y=[]
+                p=[]
 
-                for index in range(i_low, i_up):
+                for index in range(i_low,i_up):
                     x.append(td.data.x[index])
                     y.append(td.data.y[index])
                     p.append(td.data.p[index])
 
-                for (i, item) in enumerate(p):
+                #transform categorical values to numerical
+                for (i,item) in enumerate(p):
                     if item is True:
                         p[i] = 1
                     else:
                         p[i] = -1
 
-                # create a dataframe x,y,p out of the 3 lists
-                df = pd.DataFrame({'x': x, 'y': y, 'p': p})
+                 #create a dataframe out of the three lists
+                df=pd.DataFrame({'x':x,'y':y,'p':p})
 
-                # sort by x and y
-                df1 = df.sort_values(['x', 'y'])
-                pd.set_option('display.max_rows', None)
 
-                # group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
-                df1['sum_p'] = df1.groupby(['x', 'y'])['p'].transform(sum)
+                #display options
+                pd.set_option('display.max_rows',None)
+                np.set_printoptions(threshold=np.nan)
 
-                # drop old p, drop duplicates, and reset dataframe index
-                df2 = df1.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
+                #sort by x and y
+                df1=df.sort_values(['x','y'])
+                
+                #divide data into two dataframes, for +ve and -ve values. 
+                df1_neg = df1[df1.iloc[:,2]<0]
+                df1_pos = df1[df1.iloc[:,2]>0]
 
-                # sanitycheck
-                #check ranges of x,y and sum_p
-                #print(max(df2['x']))
-                #print(max(df2['y']))
-                #print(min(df2['sum_p']))
-                #print(max(df2['sum_p']))
+                #group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
+                df1_neg['sum_p'] = df1_neg.groupby(['x','y'])['p'].transform(sum)
+                df1_pos['sum_p'] = df1_pos.groupby(['x','y'])['p'].transform(sum)
+                
+                #drop old p, drop duplicates, and reset dataframe index
+                df_neg=df1_neg.drop(['p'],axis=1).drop_duplicates(subset=['x', 'y','sum_p']).reset_index(drop=True)
+                df_pos=df1_pos.drop(['p'],axis=1).drop_duplicates(subset=['x', 'y','sum_p']).reset_index(drop=True)
+                
+                #convert negative values to absolute 
+                df_neg['sum_p'] = df_neg['sum_p'].abs()
 
-                # prepopulate 34x34 matrix with zeros (conversion to int32 for later use of fromfile)
-                A = np.zeros(shape=(34,34), dtype=np.int32)
+                #prepopulate 34x34x2 matrix with zeros (conversion to int32 for later use of fromfile)
+                A = np.zeros(shape=(2,34,34), dtype=np.int32)
 
-                # convert dataframe to np array B to allow easier indexing
-                B = df2.values
+                #convert dataframe to np arrays B_neg and B_pos to allow easier indexing
+                B_neg=df_neg.values
+                B_pos=df_pos.values
 
-                # fit B into A so that A(x,y)=p
-                for row in B:
-                    A[row[1]][row[0]] = row[2]
-
-                # convert back to dataframe
-                pd.set_option('display.max_rows', None)
-                dfA = pd.DataFrame(A)
-                # print(dfA)
-
+                #fit B into A so that A(x,y)=p
+                #B_pos -> A[1] and B_neg -> A[0]
+                for row in B_neg:
+                    A[0][row[1]][row[0]]=row[2]
+                for row in B_pos:
+                    A[1][row[1]][row[0]]=row[2]
+    
                 # remove .bin
                 filename_value = filename[:-4]
 
