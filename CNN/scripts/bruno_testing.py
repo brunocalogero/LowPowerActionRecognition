@@ -275,7 +275,7 @@ if __name__ == '__main__':
 
                 print "Converting bin file {0}/{1}".format(counter, len(binary_files))
 
-                td = read_dataset('{0}/Test/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
 
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
@@ -315,6 +315,13 @@ if __name__ == '__main__':
 
                 # drop old p, drop duplicates, and reset dataframe index
                 df2 = df1.drop(['p'], axis=1).drop_duplicates(subset=['x', 'y', 'sum_p']).reset_index(drop=True)
+
+                # sanitycheck
+                #check ranges of x,y and sum_p
+                #print(max(df2['x']))
+                #print(max(df2['y']))
+                #print(min(df2['sum_p']))
+                #print(max(df2['sum_p']))
 
                 # prepopulate 34x34 matrix with zeros (conversion to int32 for later use of fromfile)
                 A = np.zeros(shape=(34,34), dtype=np.int32)
