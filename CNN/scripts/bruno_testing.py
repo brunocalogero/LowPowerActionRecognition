@@ -298,9 +298,9 @@ if __name__ == '__main__':
                     p.append(td.data.p[index])
 
                 for (i, item) in enumerate(p):
-                    if item is True:
+                    if item == True:
                         p[i] = 1
-                    else:
+                    elif item == False:
                         p[i] = -1
 
                 # create a dataframe out of the three lists
