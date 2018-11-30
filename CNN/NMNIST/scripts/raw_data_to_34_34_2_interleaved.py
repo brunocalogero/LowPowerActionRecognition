@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import random
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class Events(object):
@@ -260,7 +261,7 @@ if __name__ == '__main__':
 
     for class_index in range(0, 10):
 
-        new_dirname = '{0}/n_Test/{1}'.format(dataset_class_path, class_index)
+        new_dirname = '{0}/n_Train/{1}'.format(dataset_class_path, class_index)
 
         # for every different class create a folder:
         # Create target directory & all intermediate directories if don't exists
@@ -272,13 +273,13 @@ if __name__ == '__main__':
 
         print "Looping over class: {0}".format(class_index)
 
-        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Test'.format(dataset_class_path), str(class_index))):
+        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Train'.format(dataset_class_path), str(class_index))):
 
             for counter, filename in enumerate(binary_files):
 
                 print "Converting bin file {0}/{1}".format(counter, len(binary_files))
 
-                td = read_dataset('{0}/Test/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
 
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
@@ -310,15 +311,15 @@ if __name__ == '__main__':
                 df = pd.DataFrame({'x': x, 'y': y, 'p': p})
 
                 # display options
-                pd.set_option('display.max_rows',None)
+                pd.set_option('display.max_rows', None)
                 np.set_printoptions(threshold=np.nan)
 
                 # sort by x and y
                 df1 = df.sort_values(['x', 'y'])
 
                 # divide data into two dataframes, for +ve and -ve values.
-                df1_neg = df1[df1.iloc[:,2]<0]
-                df1_pos = df1[df1.iloc[:,2]>0]
+                df1_neg = df1[df1.iloc[:, 2] < 0]
+                df1_pos = df1[df1.iloc[:, 2] > 0]
 
                 # group by x and y, sum polarities for each x-y coordinate, and display x,y,p and summed p
                 df1_neg['sum_p'] = df1_neg.groupby(['x', 'y'])['p'].transform(sum)
@@ -332,7 +333,7 @@ if __name__ == '__main__':
                 df_neg['sum_p'] = df_neg['sum_p'].abs()
 
                 # prepopulate 34x34x2 matrix with zeros (conversion to int32 for later use of fromfile)
-                A = np.zeros(shape=(2,34,34), dtype=np.int32)
+                A = np.zeros(shape=(2, 34, 34), dtype=np.int32)
 
                 # convert dataframe to np arrays B_neg and B_pos to allow easier indexing
                 B_neg = df_neg.values
@@ -341,18 +342,20 @@ if __name__ == '__main__':
                 # fit B into A so that A(x,y)=p
                 # B_pos -> A[1] and B_neg -> A[0]
                 for row in B_neg:
-                    A[0][row[1]][row[0]]=row[2]
+                    A[0][row[1]][row[0]] = row[2]
                 for row in B_pos:
-                    A[1][row[1]][row[0]]=row[2]
+                    A[1][row[1]][row[0]] = row[2]
 
                 c = []
-                for row in range(np.shape(X_train)[0]):
-                    result = [None]*(len(X_train[0]))
-                    result[::2] = X_train[row][:1155]
-                    result[1::2] = X_train[row][1155:]
+                for row in range(np.shape(A[0])[0]):
+                    result = [None]*(len(A[0])+len(A[1]))
+                    result[::2] = A[0][row]
+                    result[1::2] = A[1][row]
                     c.append(result)
+
+                numpy_c = np.array(c)
 
                 # remove .bin
                 filename_value = filename[:-4]
 
-                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value), dtype = np.int32)
+                numpy_c.tofile('{0}/{1}.dat'.format(new_dirname, filename_value))
