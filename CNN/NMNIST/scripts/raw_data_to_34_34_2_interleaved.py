@@ -252,8 +252,11 @@ def read_dataset(filename):
 
 if __name__ == '__main__':
 
+    # arg 1: path to datasets folder containing "Train" and "Test" folders
+    # arg 2: "test" or  "train"
+
     # input dataset class_path
-    dataset_class_path = '/Users/bcaloger/Desktop/LowPowerActionRecognition/CNN/datasets'
+    dataset_class_path = '/Users/bcaloger/Desktop/LowPowerActionRecognition/CNN/NMNIST/datasets'
 
     for class_index in range(0, 10):
 
@@ -275,7 +278,7 @@ if __name__ == '__main__':
 
                 print "Converting bin file {0}/{1}".format(counter, len(binary_files))
 
-                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+                td = read_dataset('{0}/Test/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
 
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
@@ -304,7 +307,7 @@ if __name__ == '__main__':
                         p[i] = -1
 
                 # create a dataframe out of the three lists
-                df = pd.DataFrame({'x': x,'y': y,'p': p})
+                df = pd.DataFrame({'x': x, 'y': y, 'p': p})
 
                 # display options
                 pd.set_option('display.max_rows',None)
@@ -342,14 +345,14 @@ if __name__ == '__main__':
                 for row in B_pos:
                     A[1][row[1]][row[0]]=row[2]
 
-                c=[]
+                c = []
                 for row in range(np.shape(X_train)[0]):
-                    result=[None]*(len(X_train[0]))
-                    result[::2]= X_train[row][:1155]
-                    result[1::2]= X_train[row][1155:]
+                    result = [None]*(len(X_train[0]))
+                    result[::2] = X_train[row][:1155]
+                    result[1::2] = X_train[row][1155:]
                     c.append(result)
 
                 # remove .bin
                 filename_value = filename[:-4]
 
-                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value), dtype=np.int32)
+                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value), dtype = np.int32)
