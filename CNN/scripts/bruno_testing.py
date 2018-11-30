@@ -298,9 +298,9 @@ if __name__ == '__main__':
                     p.append(td.data.p[index])
 
                 for (i, item) in enumerate(p):
-                    if item is True:
+                    if item == True:
                         p[i] = 1
-                    else:
+                    elif item == False:
                         p[i] = -1
 
                 # create a dataframe out of the three lists
@@ -342,7 +342,14 @@ if __name__ == '__main__':
                 for row in B_pos:
                     A[1][row[1]][row[0]]=row[2]
 
+                c=[]
+                for row in range(np.shape(X_train)[0]):
+                    result=[None]*(len(X_train[0]))
+                    result[::2]= X_train[row][:1155]
+                    result[1::2]= X_train[row][1155:]
+                    c.append(result)
+
                 # remove .bin
                 filename_value = filename[:-4]
 
-                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value))
+                A.tofile('{0}/{1}.dat'.format(new_dirname, filename_value), dtype=np.int32)
