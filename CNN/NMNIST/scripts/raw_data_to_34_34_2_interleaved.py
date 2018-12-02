@@ -261,7 +261,7 @@ if __name__ == '__main__':
 
     for class_index in range(0, 10):
 
-        new_dirname = '{0}/n_Train/{1}'.format(dataset_class_path, class_index)
+        new_dirname = '{0}/n_Test_3/{1}'.format(dataset_class_path, class_index)
 
         # for every different class create a folder:
         # Create target directory & all intermediate directories if don't exists
@@ -273,13 +273,13 @@ if __name__ == '__main__':
 
         print "Looping over class: {0}".format(class_index)
 
-        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Train'.format(dataset_class_path), str(class_index))):
+        for (dirpath, dirnames, binary_files) in os.walk('{0}/{1}'.format('{0}/Test'.format(dataset_class_path), str(class_index))):
 
             for counter, filename in enumerate(binary_files):
 
                 print "Converting bin file {0}/{1}".format(counter, len(binary_files))
 
-                td = read_dataset('{0}/Train/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
+                td = read_dataset('{0}/Test/{1}/{2}'.format(dataset_class_path, str(class_index), filename))
 
                 t_min = np.min(td.data.ts) + 200000
                 t_max = np.max(td.data.ts) - 200000
