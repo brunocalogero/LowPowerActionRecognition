@@ -23,4 +23,4 @@ http://deeplearning.buzz/2017/06/01/what-is-batch-size-and-epoch-in-neural-netwo
 https://towardsdatascience.com/deep-inside-autoencoders-7e41f319999f    -    Deep inside: Autoencoders
 https://towardsdatascience.com/applied-deep-learning-part-3-autoencoders-1c083af4d798    -     Applied Deep Learning - Part 3: Autoencoders
 
-https://github.com/brunocalogero/LowPowerActionRecognition - binary-cross-entropy
+https://gombru.github.io/2018/05/23/cross_entropy_loss/ - binary-cross-entropy
