@@ -24,3 +24,4 @@ https://towardsdatascience.com/deep-inside-autoencoders-7e41f319999f    -    Dee
 https://towardsdatascience.com/applied-deep-learning-part-3-autoencoders-1c083af4d798    -     Applied Deep Learning - Part 3: Autoencoders
 
 https://gombru.github.io/2018/05/23/cross_entropy_loss/ - binary-cross-entropy
+https://tdhopper.com/blog/cross-entropy-and-kl-divergence/ - KL divergeance and cross-entropy
