@@ -27,4 +27,36 @@ Different Steps that we have in mind:
 
 
 RESEARCH PAPERS USED:
-https://www.frontiersin.org/articles/10.3389/fnins.2015.00437/full (some notes taken on evernote)
+- https://www.frontiersin.org/articles/10.3389/fnins.2015.00437/full (some notes taken on evernote)
+
+LINKS USED:
+- CS231n Stanford Convolutional Neural Networks for Visual Recognition:
+ - http://cs231n.stanford.edu/
+ - http://cs231n.github.io/
+- Tensorflow:
+ - TF Slim API:
+  - https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim
+ - Pre-trained Model Zoo:
+  - https://github.com/tensorflow/models
+ - kernel initializers:
+  - https://www.tensorflow.org/api_docs/python/tf/keras/initializers/VarianceScaling
+  - https://www.tensorflow.org/api_docs/python/tf/keras/initializers/RandomNormal
+  - https://www.tensorflow.org/api_docs/python/tf/keras/initializers/RandomNormal
+ - 2D convolutions:
+  - https://www.tensorflow.org/api_docs/python/tf/layers/Conv2D (includes Activation (Relu, Leaky Relu...etc))
+ - Batch Normalization:
+  - https://www.tensorflow.org/api_docs/python/tf/keras/layers/BatchNormalization (Keras sequential)
+  - https://www.tensorflow.org/api_docs/python/tf/layers/BatchNormalization (standard layer)
+ - Pooling:
+  - https://www.tensorflow.org/api_docs/python/tf/layers/MaxPooling2D (standard layer)
+  - https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling2d (standard layer)
+  - https://www.tensorflow.org/api_docs/python/tf/layers/AveragePooling2D 
+ - Keras Sequential Model (API):
+  - https://www.tensorflow.org/api_docs/python/tf/keras/models/Model
+ - Optimizers:
+  - https://www.tensorflow.org/api_docs/python/tf/keras/optimizers (all most used optimizers)
+  - https://www.tensorflow.org/api_docs/python/tf/keras/optimizers/Adam (mainly used adam as a safe solution)
+- Data Augmentation: 
+ - https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
+- Widely used Datasets and Results (on a per paper basis):
+ - http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html
