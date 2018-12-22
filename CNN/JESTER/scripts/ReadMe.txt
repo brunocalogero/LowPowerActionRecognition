@@ -4,9 +4,7 @@ Use PIX2NVS to convert mp4 to NVS
 Use testing.py script to convert raw NVS data to an interleaved 2 channel 176x100 matrix saved as .dat file
 Repeat for each class
 
-Details:
 Video length = 1s
-fps = 37 frames
 Dimensions = 176x100 dimensions (interleaved as 352x100)
 
 Parameters used: 
