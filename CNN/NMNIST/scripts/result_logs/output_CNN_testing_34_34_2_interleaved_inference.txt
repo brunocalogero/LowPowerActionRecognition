@@ -1,0 +1,16 @@
+Training data shape:  (60000, 2312)
+Training labels shape:  (60000,)
+Test data shape:  (10000, 2312)
+Test labels shape:  (10000,)
+RESIZED DATA
+Training data shape:  (60000, 34, 34, 2)
+Training labels shape:  (60000,)
+Test data shape:  (10000, 34, 34, 2)
+Test labels shape:  (10000,)
+3
+Training data shape:  (59000, 34, 34, 2)
+Test data shape:  (10000, 34, 34, 2)
+Validation data shape:  (1000, 34, 34, 2)
+SESSION START
+Restoring Model
+Got 9809 / 10000 correct (98.09%)

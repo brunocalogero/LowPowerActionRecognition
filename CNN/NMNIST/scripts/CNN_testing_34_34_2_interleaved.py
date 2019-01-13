@@ -93,7 +93,7 @@ def model_init_fn(inputs):
     bn1 = tf.layers.batch_normalization(conv1)
     pool1 = tf.layers.max_pooling2d(bn1, 2, 2)
 
-    # maybe add a dropout at some point here
+    # maybe add a dropout/dropconnect at some point here
 
     conv2 = tf.layers.conv2d(pool1, channel_2, (3, 3), padding='SAME', activation=tf.nn.leaky_relu)
     bn2 = tf.layers.batch_normalization(conv2)
@@ -109,7 +109,7 @@ def model_init_fn(inputs):
     return fc
 
 # NOTE: Pulling up the N-MNIST data
-dataset_class_path = '/Users/brunocalogero/Desktop/LowPowerActionRecognition/CNN/NMNIST/datasets'
+dataset_class_path = 'D:/LowPowerActionRecognition/CNN/NMNIST/datasets'
 X_train, Y_train, X_test, Y_test = load_NMNIST(dataset_class_path)
 
 # NOTE: Set up global variables For GPU use
@@ -207,7 +207,7 @@ with tf.device(device):
         train_op = optimizer.minimize(loss)
 
 
-with tf.Session() as sess:
+with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
     sess.run(tf.global_variables_initializer())
     t = 0
     for epoch in range(num_epochs):
