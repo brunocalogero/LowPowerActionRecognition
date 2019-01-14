@@ -90,7 +90,7 @@ def load_JESTER(path):
 
     return Xtr, Ytr, Xte, Yte
 
-def check_accuracy(sess, dset, x, scores, is_training=None):
+def check_accuracy(sess, dset, x, scores, train_writer, t, is_training=None):
     """
     Check accuracy on a classification model.
 
@@ -112,6 +112,8 @@ def check_accuracy(sess, dset, x, scores, is_training=None):
         num_correct += (y_pred == y_batch).sum()
     acc = float(num_correct) / num_samples
     print('Got %d / %d correct (%.2f%%)' % (num_correct, num_samples, 100 * acc))
+    val_acc = tf.summary.scalar("val_accuracy", acc)
+    train_writer.add_summary(val_acc, t)
 
 def model_init_fn(inputs):
     """
@@ -220,11 +222,50 @@ test_dset = Dataset(X_testy, Y_test, batch_size=batch_len)
 # sanity check
 print(train_dset)
 
+# # START TRAINING
+# tf.reset_default_graph()
+# with tf.device(device):
+#     x = tf.placeholder(tf.float32, [None, 100, 176, 2])
+#     y = tf.placeholder(tf.int32, [None])
+#     is_training = tf.placeholder(tf.bool, name='is_training')
+#     _ = tf.Variable(initial_value='fake_variable')
+#
+#     scores = model_init_fn(x)
+#     loss   = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=scores)
+#     loss   = tf.reduce_mean(loss)
+#
+#     optimizer = tf.train.AdamOptimizer(learning_rate)
+#     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+#     with tf.control_dependencies(update_ops):
+#         train_op = optimizer.minimize(loss)
+#
+#
+# with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)) as sess:
+#     sess.run(tf.global_variables_initializer())
+#     t = 0
+#     for epoch in range(num_epochs):
+#         print('Starting epoch %d' % epoch)
+#         for x_np, y_np in train_dset:
+#             feed_dict = {x: x_np, y: y_np, is_training:1}
+#             loss_np, _ = sess.run([loss, train_op], feed_dict=feed_dict)
+#             if t % print_every == 0:
+#                 print('Iteration %d, loss = %.4f' % (t, loss_np))
+#                 check_accuracy(sess, val_dset, x, scores, is_training=is_training)
+#             if t % save_every == 0:
+#                 print('saving model..')
+#                 save_path = tf.train.Saver().save(sess, "saved_models/1/network_weights.ckpt")
+#                 print("Model saved in file: %s" % save_path)
+#             t += 1
+#     print('saving FINAL model..')
+#     save_path = tf.train.Saver().save(sess, "saved_models/1/network_weights.ckpt")
+#     print("FINAL Model saved in file: %s" % save_path)
+
+
 # START TRAINING
 tf.reset_default_graph()
 with tf.device(device):
-    x = tf.placeholder(tf.float32, [None, 100, 176, 2])
-    y = tf.placeholder(tf.int32, [None])
+    x = tf.placeholder(tf.float32, [None, 100, 176, 2], name='example')
+    y = tf.placeholder(tf.int32, [None], name='example_label')
     is_training = tf.placeholder(tf.bool, name='is_training')
     _ = tf.Variable(initial_value='fake_variable')
 
@@ -237,22 +278,32 @@ with tf.device(device):
     with tf.control_dependencies(update_ops):
         train_op = optimizer.minimize(loss)
 
+    # add scalar summary for cost tensor
+    cost_scalar = tf.summary.scalar("cost", loss)
+
 
 with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)) as sess:
     sess.run(tf.global_variables_initializer())
+
+    train_writer = tf.summary.FileWriter( './tf_logs/1/train', sess.graph)
+
     t = 0
     for epoch in range(num_epochs):
         print('Starting epoch %d' % epoch)
         for x_np, y_np in train_dset:
+
+
             feed_dict = {x: x_np, y: y_np, is_training:1}
-            loss_np, _ = sess.run([loss, train_op], feed_dict=feed_dict)
+            cost_summary, loss_np, _ = sess.run([cost_scalar, loss, train_op], feed_dict=feed_dict)
             if t % print_every == 0:
-                print('Iteration %d, loss = %.4f' % (t, loss_np))
-                check_accuracy(sess, val_dset, x, scores, is_training=is_training)
+                print('Iteration %d, training loss = %.4f' % (t, loss_np))
+                train_writer.add_summary(cost_summary, t)
+                check_accuracy(sess, val_dset, x, scores, train_writer, t,  is_training=is_training)
             if t % save_every == 0:
                 print('saving model..')
                 save_path = tf.train.Saver().save(sess, "saved_models/1/network_weights.ckpt")
                 print("Model saved in file: %s" % save_path)
+
             t += 1
     print('saving FINAL model..')
     save_path = tf.train.Saver().save(sess, "saved_models/1/network_weights.ckpt")
