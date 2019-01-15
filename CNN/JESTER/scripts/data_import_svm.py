@@ -1,42 +1,16 @@
 import numpy
 import os
 import time
-import keras
 
 import datetime as dt
-import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-
-from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPooling2D, BatchNormalization, Dropout, Activation, Flatten, Input
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras.optimizers import Adam
-from keras.callbacks import TensorBoard
-from keras.utils import to_categorical
 
 from sklearn import svm, metrics
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer, accuracy_score
-
-
-# Setting up GPU / CPU, set log_device_placement to True to see what uses GPU and what uses CPU
-config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False, device_count = {'GPU': 1 , 'CPU': 1})
-sess = tf.Session(config=config)
-keras.backend.set_session(sess)
-
-
-# NOTE: Set up global variables For GPU use (not used in this code, just informative)
-USE_GPU = True
-
-if USE_GPU:
-    device = '/device:GPU:0'
-else:
-    device = '/cpu:0'
-
-print('Using device: ', device)
 
 
 def load_JESTER(path):
@@ -96,38 +70,6 @@ def load_JESTER(path):
     return Xtr, Ytr, Xte, Yte
 
 
-# Function to create model, required for KerasClassifier
-def create_model(optimizer='adam', learn_rate=0.001, activation=tf.nn.leaky_relu):
-
-    channel_1, channel_2, channel_3, num_classes =  64, 32, 8, 4
-    # create model
-    model = Sequential()
-
-    model.add(Conv2D(channel_1, (3, 3), padding='SAME', activation=activation,  input_shape=(100, 176, 2), data_format="channels_last"))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid'))
-
-    model.add(Dropout(0.5))
-
-    model.add(Conv2D(channel_2, (3, 3), padding='SAME', activation=activation))
-    model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid'))
-
-    # model.add(Conv2D(channel_3, (3, 3), padding='SAME', activation=activation))
-    # model.add(BatchNormalization())
-    # model.add(MaxPooling2D(pool_size=(2, 2), strides=None, padding='valid'))
-    model.add(Dropout(0.5))
-
-    model.add(Flatten())
-    model.add(Dense(num_classes, activation='softmax'))
-
-    optimizer = Adam(lr=learn_rate)
-    # Compile model (sparse cross-entropy can be used if one hot encoding not used)
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=[keras.metrics.categorical_accuracy])
-
-    return model
-
-
 # NOTE: Pulling up the N-MNIST data
 dataset_class_path = 'D:/LowPowerActionRecognition/CNN/JESTER/datasets'
 X_train, Y_train, X_test, Y_test = load_JESTER(dataset_class_path)
@@ -179,45 +121,74 @@ print('validation:', Y_val[:10])
 print('training:', Y_train[:10])
 
 
-# # declaring number of folds for cross_validation
-# n_folds = 8   # if using hyperparameterisation, please uncomment
-epochs = 15
-batch_size = 32
+# Preprocessing: reshape the image data into rows
+X_train = np.reshape(X_train, (X_train.shape[0], -1))
+X_val = np.reshape(X_val, (X_val.shape[0], -1))
+X_test = np.reshape(X_test, (X_test.shape[0], -1))
 
-# retrieve model
-model = create_model()
-model.summary()
+# sanity check
+print('X_train of shape:', X_train.shape)
+print('X_val of shape:', X_val.shape)
+print('X_test of shape:', X_test.shape)
+
+
+
+# creating dummy SVM classifier for hyperparameterization
+classifier = svm.SVC()
+
+n_folds = 5
+# choosing different parameter combinations to try
+param_grid = {'C': [0.01, 0.1, 1, 10],
+              'gamma': [0.00002, 0.0001, 0.001, 0.01],
+              'kernel': ['rbf', 'linear'],
+             }
+
+# type of scoring used to compare parameter combinations
+acc_scorer = make_scorer(accuracy_score)
+
+
+# run grid search
+start_time = dt.datetime.now()
+print('Start grid search at {}'.format(str(start_time)))
+
+grid_search = GridSearchCV(classifier, param_grid, cv=n_folds, scoring=acc_scorer, n_jobs=4)
+grid_obj = grid_search.fit(X_val, Y_val)
+# get grid search results
+print(grid_obj.cv_results_)
+
+# set the best classifier found for rbf
+clf = grid_obj.best_estimator_
+print(clf)
+end_time = dt.datetime.now()
+print('Stop grid search {}'.format(str(end_time)))
+elapsed_time= end_time - start_time
+print('Elapsed grid search time {}'.format(str(elapsed_time)))
+
 
 # fit the best alg to the training data
 start_time = dt.datetime.now()
 print('Start learning with best params at {}'.format(str(start_time)))
 
-model.fit(X_train, to_categorical(Y_train, num_classes=4), validation_data=(X_val, to_categorical(Y_val, num_classes=4)), epochs=epochs, batch_size=batch_size, verbose=1, callbacks=[TensorBoard(log_dir='tf_logs/1/train')])
+clf.fit(X_train, Y_train)
 
 end_time = dt.datetime.now()
 print('Stop learning {}'.format(str(end_time)))
 elapsed_time= end_time - start_time
 print('Elapsed learning time {}'.format(str(elapsed_time)))
 
-
-predictions_scores = model.predict(X_testy, batch_size=batch_size)
-
-print(len(predictions_scores) == len(Y_test))
-print(predictions_scores)
-print(Y_test)
-
-
-# Actual Inference
-predictions = model.predict_classes(X_testy, batch_size=batch_size)
-
+# predict using test set
+predictions = clf.predict(X_test)
 print(accuracy_score(Y_test, predictions))
 
 # Now predict the value of the test
 expected = Y_test
 
-print("Classification report for classifier:\n%s\n", metrics.classification_report(expected, predictions))
+print("Classification report for classifier %s:\n%s\n"
+      % (clf, metrics.classification_report(expected, predictions)))
 
 cm = metrics.confusion_matrix(expected, predictions)
 print("Confusion matrix:\n%s" % cm)
+
+# plot_confusion_matrix(cm)
 
 print("Accuracy={}".format(metrics.accuracy_score(expected, predictions)))
