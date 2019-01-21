@@ -1,0 +1,13 @@
+- https://arxiv.org/abs/1707.04555 - 
+Temporal Modeling Approaches for Large-scale Youtube-8M Video Understanding (fast-forward LSTMs for video prediction generation)
+- https://arxiv.org/abs/1609.08675 - YouTube-8M: A Large-Scale Video Classification Benchmark
+- https://machinelearningmastery.com/when-to-use-mlp-cnn-and-rnn-neural-networks/ - different scenarios of when to use what architecture
+- https://machinelearningmastery.com/models-sequence-prediction-recurrent-neural-networks/ - slightly more details on RNNs and use cases for prediction generation
+- https://machinelearningmastery.com/cnn-long-short-term-memory-networks/ - implementation details to get started (with keras)
+- https://arxiv.org/abs/1411.4389 - related with previous link (one of original papers for CNN+LSTMs for vision description problems, very good for benchmarking)
+- https://machinelearningmastery.com/sequence-classification-lstm-recurrent-neural-networks-python-keras/ - other practical keras based implementation
+- https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43455.pdf - another paper for benchmarking (adds a DNN after CNN+LSTM)
+- https://adventuresinmachinelearning.com/keras-lstm-tutorial/ - tutorial on LSTMs in Keras
+- https://jhui.github.io/2017/03/15/RNN-LSTM-GRU/ - LSTM vs RNN vs GRU
+- https://www.youtube.com/watch?v=4tlrXYBt50s - RNNs vs LSTMs vs GRUs (great video summary of the differences, advantages and mathematical understanding)
+- Lecture 10, 12 (and 13) of CS231n, especially 10 for RNNs and LSTMs and 12 for Variational Autoencoders
