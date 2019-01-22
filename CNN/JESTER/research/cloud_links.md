@@ -1,0 +1,2 @@
+- https://www.youtube.com/watch?v=4ocbx9IeBMU - Deploying a machine learning model to the cloud using AWS Lambda - Dr. Benjamin Weigel
+- https://bweigel.github.io/deploying_a_ml_service_to_aws_lambda.html - website for above preso 
