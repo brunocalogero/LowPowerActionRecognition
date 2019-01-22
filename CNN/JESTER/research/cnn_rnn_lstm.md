@@ -11,3 +11,10 @@ Temporal Modeling Approaches for Large-scale Youtube-8M Video Understanding (fas
 - https://jhui.github.io/2017/03/15/RNN-LSTM-GRU/ - LSTM vs RNN vs GRU
 - https://www.youtube.com/watch?v=4tlrXYBt50s - RNNs vs LSTMs vs GRUs (great video summary of the differences, advantages and mathematical understanding)
 - Lecture 10, 12 (and 13) of CS231n, especially 10 for RNNs and LSTMs and 12 for Variational Autoencoders
+- https://blog.coast.ai/five-video-classification-methods-implemented-in-keras-and-tensorflow-99cad29cc0b5 - CNN + LSTM implementation
+- https://github.com/sagarvegad/Video-Classification-CNN-and-LSTM-/blob/master/train_CNN_RNN.py - same as above
+- https://github.com/HHTseng/video-classification - 3DCNN and CNN+LSTM implementations
+- https://github.com/woodfrog/ActionRecognition - action recognition with pixel data (w/ optical flow also CNN + LSTM)
+- https://github.com/talhasaruhan/video-action-classification - same as above
+- https://riptutorial.com/keras/example/29812/vgg-16-cnn-and-lstm-for-video-classification - simple same as above
+- https://blog.coast.ai/five-video-classification-methods-implemented-in-keras-and-tensorflow-99cad29cc0b5 - same as above nice progression from shitty models to good one
