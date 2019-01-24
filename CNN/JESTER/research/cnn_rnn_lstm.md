@@ -18,3 +18,38 @@ Temporal Modeling Approaches for Large-scale Youtube-8M Video Understanding (fas
 - https://github.com/talhasaruhan/video-action-classification - same as above
 - https://riptutorial.com/keras/example/29812/vgg-16-cnn-and-lstm-for-video-classification - simple same as above
 - https://blog.coast.ai/five-video-classification-methods-implemented-in-keras-and-tensorflow-99cad29cc0b5 - same as above nice progression from shitty models to good one
+
+
+Use the youtube 8M part 2 paper, great way to describe more complex approaches (SOA) compared to our more basic one, possibly implement??
+https://static.googleusercontent.com/media/research.google.com/en//youtube8m/workshop2018/c_01.pdf
+--> main architecture used: Willow
+--> temporal aggregation (aggregate frame-level features) (from frames to video features): NetVLAD (basic LSTM/GRU approaches were also used, bidirectional LSTMs also used by Samsung)
+--> Convolution on temporal axis is another famous method to substitute RNN based methods (ResidualCNN-X: where X is the output size, composed of a fully connected layer and a deep CNN network with several residual modules.
+(time-distributed convolutional layers, containing several layers of convolutions followed by max-pooling for video and audio separately, then concatenating the resulting features.)
+
+- https://static.googleusercontent.com/media/research.google.com/en//youtube8m/workshop2018/c_17.pdf --> good fast explanation of used LSTMs + ResidualCNN-X explanation
+- https://arxiv.org/pdf/1409.2329.pdf - for RNN explanation
+- https://arxiv.org/pdf/1411.4389.pdf - main paper explaining the architecture we are trying to achieve
+(First, we integrate 2D CNNs that can be pre-trained on large image datasets. Second, we combine the CNN and LSTM into a single model to enable end-to-end fine-tuning) 
+- http://blog.qure.ai/notes/deep-learning-for-videos-action-recognition-review - really good for video action recognition basic approaches (all the different techniques until now)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
