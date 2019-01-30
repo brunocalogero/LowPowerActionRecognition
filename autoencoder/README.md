@@ -25,3 +25,5 @@ https://towardsdatascience.com/applied-deep-learning-part-3-autoencoders-1c083af
 
 https://gombru.github.io/2018/05/23/cross_entropy_loss/ - binary-cross-entropy
 https://tdhopper.com/blog/cross-entropy-and-kl-divergence/ - KL divergeance and cross-entropy
+
+CVAE using keras :https://gist.github.com/naotokui/b9fb93b8dba534b55a140e8c88ce07f5
