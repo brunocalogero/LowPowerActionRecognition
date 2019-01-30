@@ -13,6 +13,14 @@ Don't be scared to send personal emails to Yiannis asking questions and what not
 
 Always keep in mind - the title of our project is Low Power Action recognition - keep in mind how compression is helping achieve the objective of the project, (in this case auto-encoding would mimic the easier file transfer from the DVS camera to the portable system in an efficient way). Everytime you see that something from this autoencoder can help achieve our objectives right it down and pivot towards that objective.
 
+Version control for autoencoder:
+ver1 - MNIST "VAE.ipynp"
+ver2 - NMNIST "VAE-NMNIST.ipynb" -> first nmnist test with huge clump of data
+ver3 - VAE-NMNIST.ipynb" ->Trying different layers, neurons, activation function, epochs. Result in a better seperation of data
+ver4 - "Justin_test2 & Chingis_test"-> Different pre-processing method to remove background noise, added plot
+ver5 - "Justin_test3"-> Hyperameterisation, finalise the model with key metrics
+ver6 - "SVM_etc" -> Trying to compare with SVM for VAE_data and Normal_data
+ver7 - "CVAE" -> First try implementation of CVAE
 
 References:
 https://blog.keras.io/building-autoencoders-in-keras.html  -  Building autoencoders in Keras
