@@ -19,7 +19,7 @@ def load_JESTER(path):
             for file in f:
                 cnt += 1
                 if (cnt % 100 == 0):
-                    print('Percent deleted: {}%'.format(round((cnt / len(f)) * 100, 2)))
+                    print('Percent loaded: {}%'.format(round((cnt / len(f)) * 100, 2)))
                 X=np.load('{0}/n_Train/{1}/{2}'.format(path, str(class_index), file))
                 xs_train.append(X)
                 ys_train.append(class_index)
@@ -30,7 +30,7 @@ def load_JESTER(path):
             for file in f:
                 cnt += 1
                 if (cnt % 100 == 0):
-                    print('Percent deleted: {}%'.format(round((cnt / len(f)) * 100, 2)))
+                    print('Percent loaded: {}%'.format(round((cnt / len(f)) * 100, 2)))
                 X=np.load('{0}/n_Test/{1}/{2}'.format(path, str(class_index), file))
                 xs_test.append(X)
                 ys_test.append(class_index)
