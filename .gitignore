@@ -1,6 +1,11 @@
 .DS_Store
-.DS_Store
+__pycache__
 datasets
+data
 .ipynb_checkpoints
 Untitled.ipynb
 UCL_ASL_NVS
+CNN/JESTER/data/test
+CNN/JESTER/data/train
+CNN/JESTER/data/ucfTrainTestlist
+CNN/JESTER/data/data_file.csv

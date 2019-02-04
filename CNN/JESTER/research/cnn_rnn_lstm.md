@@ -1,4 +1,4 @@
-- https://arxiv.org/abs/1707.04555 - 
+- https://arxiv.org/abs/1707.04555 -
 Temporal Modeling Approaches for Large-scale Youtube-8M Video Understanding (fast-forward LSTMs for video prediction generation)
 - https://arxiv.org/abs/1609.08675 - YouTube-8M: A Large-Scale Video Classification Benchmark
 - https://machinelearningmastery.com/when-to-use-mlp-cnn-and-rnn-neural-networks/ - different scenarios of when to use what architecture
@@ -30,26 +30,16 @@ https://static.googleusercontent.com/media/research.google.com/en//youtube8m/wor
 - https://static.googleusercontent.com/media/research.google.com/en//youtube8m/workshop2018/c_17.pdf --> good fast explanation of used LSTMs + ResidualCNN-X explanation
 - https://arxiv.org/pdf/1409.2329.pdf - for RNN explanation
 - https://arxiv.org/pdf/1411.4389.pdf - main paper explaining the architecture we are trying to achieve
-(First, we integrate 2D CNNs that can be pre-trained on large image datasets. Second, we combine the CNN and LSTM into a single model to enable end-to-end fine-tuning) 
+(First, we integrate 2D CNNs that can be pre-trained on large image datasets. Second, we combine the CNN and LSTM into a single model to enable end-to-end fine-tuning)
 - http://blog.qure.ai/notes/deep-learning-for-videos-action-recognition-review - really good for video action recognition basic approaches (all the different techniques until now)
 
 
 
+- http://crcv.ucf.edu/data/UCF101.php - UCF101 dataset where first tests are made for CNN + LSTM
+- https://blog.coast.ai/five-video-classification-methods-implemented-in-keras-and-tensorflow-99cad29cc0b5 - implementations with CNN + LSTM and actual coding help with github blog below
+- https://github.com/harvitronix/five-video-classification-methods
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+- https://arxiv.org/pdf/1804.08150.pdf - Recurrent Spiking Neural Networks and a bunch of examples of what is currently out there for SNN usage and how they have been used
+- https://arxiv.org/pdf/1610.09513.pdf - Phased LSTM: Accelerating Recurrent Network Training for Long or Event-based Sequences (for futur)
