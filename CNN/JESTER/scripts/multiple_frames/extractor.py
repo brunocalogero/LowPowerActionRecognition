@@ -3,6 +3,14 @@ from keras.applications.inception_v3 import InceptionV3, preprocess_input
 from keras.models import Model, load_model
 from keras.layers import Input
 import numpy as np
+import tensorflow as tf
+import keras
+
+
+# Setting up GPU / CPU, set log_device_placement to True to see what uses GPU and what uses CPU
+config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False, device_count = {'GPU': 1 , 'CPU': 1})
+sess = tf.Session(config=config)
+keras.backend.set_session(sess)
 
 class Extractor():
     def __init__(self, weights=None):

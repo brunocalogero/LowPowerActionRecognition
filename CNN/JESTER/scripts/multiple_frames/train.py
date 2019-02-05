@@ -5,9 +5,10 @@ from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, CSVLogg
 from models import ResearchModels
 from data_import import Dataset
 import time
-import datetime as dt
+import keras
 import os.path
-
+import datetime as dt
+import tensorflow as tf
 
 # Setting up GPU / CPU, set log_device_placement to True to see what uses GPU and what uses CPU
 config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False, device_count = {'GPU': 1 , 'CPU': 1})
@@ -17,7 +18,7 @@ keras.backend.set_session(sess)
 
 def train(data_type, seq_length, model, class_path, saved_model=None,
           class_limit=None, image_shape=None,
-          load_to_memory=False, batch_size=32, nb_epoch=100, num_classes=4):
+          features=False, batch_size=32, nb_epoch=100, num_classes=4):
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
         filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + \
@@ -36,36 +37,25 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
     csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + \
         str(timestamp) + '.log'))
 
-    # Get the data and process it.
-    # if image_shape is None:
-    #     data = DataSet(
-    #         seq_length=seq_length,
-    #         class_limit=class_limit
-    #     )
-    # else:
-    #     data = DataSet(
-    #         seq_length=seq_length,
-    #         class_limit=class_limit,
-    #         image_shape=image_shape
-    #     )
-    #
-    # # Get samples per epoch.
-    # # Multiply by 0.7 to attempt to guess how much of data.data is the train set.
-    # steps_per_epoch = (len(data.data) * 0.7) // batch_size
-    #
-    # if load_to_memory:
-    #     # Get data.
-    #     X, y = data.get_all_sequences_in_memory('train', data_type)
-    #     X_test, y_test = data.get_all_sequences_in_memory('test', data_type)
-    # else:
-    #     # Get generators.
-    #     generator = data.frame_generator(batch_size, 'train', data_type)
-    #     val_generator = data.frame_generator(batch_size, 'test', data_type)
 
     dataset_class_path = '{0}/CNN/JESTER/data'.format(class_path)
     data = Dataset(path=dataset_class_path)
 
-    if load_to_memory:
+    if features:
+        # get sequence feature data (post InceptionV3 with imagenet)
+
+        start_time = dt.datetime.now()
+        print('Start sequence data import {}'.format(str(start_time)))
+
+        X_train, y_train = data.load_JESTER_sequences('train', categorical=True)
+        X_test, y_test = data.load_JESTER_sequences('test', categorical=True)
+
+        end_time = dt.datetime.now()
+        print('Stop load sequence data time {}'.format(str(end_time)))
+
+        elapsed_time= end_time - start_time
+        print('Elapsed load sequence data time {}'.format(str(elapsed_time)))
+    else:
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
@@ -77,17 +67,32 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         elapsed_time= end_time - start_time
         print('Elapsed load data time {}'.format(str(elapsed_time)))
-    else:
-        # Get generators.
-        generator = data.frame_generator(batch_size, 'train', data_type)
-        val_generator = data.frame_generator(batch_size, 'test', data_type)
 
     # Get the model.
     rm = ResearchModels(num_classes, model, seq_length, saved_model)
 
     # Fit!
-    if load_to_memory:
-        # Use standard fit.
+    if features:
+        # used for LSTM (feauters loaded after InceptionV3)
+        start_time = dt.datetime.now()
+        print('Start sequence train data fit {}'.format(str(start_time)))
+
+        rm.model.fit(
+            X_train,
+            y_train,
+            batch_size=batch_size,
+            validation_data=(X_test, y_test),
+            verbose=1,
+            callbacks=[tb, early_stopper, csv_logger, checkpointer],
+            epochs=nb_epoch)
+
+        end_time = dt.datetime.now()
+        print('Stop sequence train data fit {}'.format(str(end_time)))
+
+        elapsed_time= end_time - start_time
+        print('Elapsed sequence train data fitting time {}'.format(str(elapsed_time)))
+    else:
+        # Use standard fit (all other research models)
         start_time = dt.datetime.now()
         print('Start train data fit {}'.format(str(start_time)))
 
@@ -95,7 +100,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
             X_train,
             y_train,
             batch_size=batch_size,
-            validation_set=(X_test, y_test),
+            validation_data=(X_test, y_test),
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
             epochs=nb_epoch)
@@ -106,31 +111,19 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         elapsed_time= end_time - start_time
         print('Elapsed train data fitting time {}'.format(str(elapsed_time)))
 
-    else:
-        # Use fit generator.
-        rm.model.fit_generator(
-            generator=generator,
-            steps_per_epoch=steps_per_epoch,
-            epochs=nb_epoch,
-            verbose=1,
-            callbacks=[tb, early_stopper, csv_logger, checkpointer],
-            validation_data=val_generator,
-            validation_steps=12,
-            workers=4)
-
 
 def main():
     """These are the main training settings. Set each before running
     this file."""
 
-    class_path = '/Users/brunocalogero/Desktop/LowPowerActionRecognition/'
+    class_path = 'D:/LowPowerActionRecognition'
 
     # model can be one of lstm, lrcn, mlp, conv_3d, c3d
-    model = 'conv_3d'
+    model = 'lstm'
     saved_model = None  # None or weights file
     class_limit = None  # int, can be 1-101 or None
     seq_length = 12
-    load_to_memory = True  # pre-load the sequences into memory
+    features = True  # set to true if using lstm
     batch_size = 32
     nb_epoch = 1
     num_classes = 4
@@ -147,7 +140,7 @@ def main():
 
     train(data_type, seq_length, model, class_path=class_path, saved_model=saved_model,
           class_limit=class_limit, image_shape=image_shape,
-          load_to_memory=load_to_memory, batch_size=batch_size, nb_epoch=nb_epoch, num_classes=num_classes)
+          features=features, batch_size=batch_size, nb_epoch=nb_epoch, num_classes=num_classes)
 
 if __name__ == '__main__':
     main()
