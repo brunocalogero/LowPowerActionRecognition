@@ -36,10 +36,13 @@ https://static.googleusercontent.com/media/research.google.com/en//youtube8m/wor
 
 
 - http://crcv.ucf.edu/data/UCF101.php - UCF101 dataset where first tests are made for CNN + LSTM
+citation: Khurram Soomro, Amir Roshan Zamir and Mubarak Shah, UCF101: A Dataset of 101 Human Action Classes From Videos in The Wild., CRCV-TR-12-01, November, 2012.
 - https://blog.coast.ai/five-video-classification-methods-implemented-in-keras-and-tensorflow-99cad29cc0b5 - implementations with CNN + LSTM and actual coding help with github blog below
 - https://github.com/harvitronix/five-video-classification-methods
 
 
 
 - https://arxiv.org/pdf/1804.08150.pdf - Recurrent Spiking Neural Networks and a bunch of examples of what is currently out there for SNN usage and how they have been used
-- https://arxiv.org/pdf/1610.09513.pdf - Phased LSTM: Accelerating Recurrent Network Training for Long or Event-based Sequences (for futur)
+- https://arxiv.org/pdf/1610.09513.pdf - Phased LSTM: Accelerating Recurrent Network Training for Long or Event-based Sequences (for future)
+
+- https://arxiv.org/abs/1512.00567 -  Inception V3, pre-trained on ImageNet.
