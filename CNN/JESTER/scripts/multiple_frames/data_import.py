@@ -1,3 +1,5 @@
+import random
+import threading
 import os
 import os.path
 
@@ -8,6 +10,25 @@ from keras.utils import to_categorical
 
 from extractor import Extractor
 from tqdm import tqdm
+
+
+class threadsafe_iterator:
+    def __init__(self, iterator):
+        self.iterator = iterator
+        self.lock = threading.Lock()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        with self.lock:
+            return next(self.iterator)
+
+def threadsafe_generator(func):
+    """Decorator"""
+    def gen(*a, **kw):
+        return threadsafe_iterator(func(*a, **kw))
+    return gen
 
 
 class Dataset():
@@ -146,8 +167,6 @@ class Dataset():
         xs = []
         ys = []
 
-        # labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
-
         data = 'train' if train_test == 'train' else 'test'
 
         for (root, dirs, dat_files) in os.walk('{0}/sequences/{1}'.format(self.path, data)):
@@ -186,6 +205,70 @@ class Dataset():
 
         return X_data, Y_data
 
+    @threadsafe_generator
+    def load_generator(self, train_test, batch_size=32, num_classes=4, categorical=True):
+        """
+        This class method exports batches of data in the form of generator by yielding.
+        Used for fit_generator.
+        """
+
+        examples = {}
+
+        labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
+
+        data = 'train' if train_test == 'train' else 'test'
+
+        for label in labels:
+            # NOTE: make sure that your data files do not contain '.DS_Store'
+            for (root, dirs, dat_files) in os.walk('{0}/n_{1}/{2}'.format(self.path, data, label)):
+                # populate dictionary with all examples with labels as keys
+                examples[label] = dat_files
+
+        while True:
+
+            xs = []
+            ys = []
+
+            for label in labels:
+                # temp = random.sample(examples[label], int(batch_size/num_classes)) # ValueError: Sample larger than population
+                temp = [random.choice(examples[label]) for _ in range(int(batch_size/num_classes))] 
+                # retrieve actual data
+                for file in temp:
+                    single_X = np.load('{0}/n_{1}/{2}/{3}'.format(self.path, data, label, file))
+                    single_X_resh = single_X.reshape(12, 100, 176, 2)
+                    xs.append(single_X_resh)
+
+                    if 'Swiping_Down' in file:
+                        ys.append(0)
+                    elif 'Swiping_Up' in file:
+                        ys.append(1)
+                    elif 'Swiping_Left' in file:
+                        ys.append(2)
+                    elif 'Swiping_Right' in file:
+                        ys.append(3)
+
+                # pop the temp elements from dict with given label as key
+                # print('length for {} (before popping):'.format(label), len(examples[label])) # sanity check
+                examples[label] = list(set(examples[label]) - set(temp))
+                # print('length for {} (after popping):'.format(label), len(examples[label])) # sanity check
+
+            # turn into numpy array
+            X = np.array(xs)
+            Y = np.array(ys)
+
+            # sanity check
+            # print(X.shape)
+            # print(Y.shape)
+
+            # one-hot label conversion
+            if categorical:
+                Y = to_categorical(Y)
+
+            # shuffle X and Y
+            X_data, Y_data = shuffle(X, Y)
+
+            yield X_data, Y_data
+
 
 def main():
     # NOTE: Pulling up the N-JESTER (reduced) dataset
@@ -221,11 +304,15 @@ def main():
     # data.load_JESTER_features('test')
 
     # NOTE: uncomment below for feature sequence loading testing
-    X_test, y_test = data.load_JESTER_sequences('train')
+    # X_test, y_test = data.load_JESTER_sequences('train')
+    #
+    # print('shape for x_test:', X_test.shape)
+    # print('shape for y_test:', y_test.shape)
 
-    print('shape for x_test:', X_test.shape)
-    print('shape for y_test:', y_test.shape)
-
+    # NOTE: uncomment below for load generator testing
+    # generator = data.load_generator('test')
+    # for i in generator:
+    #     print(i)
 
 if __name__ == '__main__':
     main()

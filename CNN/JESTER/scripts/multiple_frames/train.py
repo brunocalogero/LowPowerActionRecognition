@@ -59,8 +59,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
-        X_test, y_test = data.load_JESTER('test', categorical=True)
-        X_train, y_train = data.load_JESTER('train', categorical=True)
+        generator = data.load_generator('train')
+        test_generator = data.load_generator('test')
 
         end_time = dt.datetime.now()
         print('Stop load data time {}'.format(str(end_time)))
@@ -96,14 +96,15 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start train data fit {}'.format(str(start_time)))
 
-        rm.model.fit(
-            X_train,
-            y_train,
-            batch_size=batch_size,
-            validation_data=(X_test, y_test),
+        rm.model.fit_generator(
+            generator=generator,
+            steps_per_epoch=470, # ~ 16725/32 = 522
+            epochs=nb_epoch,
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
-            epochs=nb_epoch)
+            validation_data=test_generator,
+            validation_steps=50, # ~ 2008/32 = 62.75
+            workers=4)
 
         end_time = dt.datetime.now()
         print('Stop train data fit {}'.format(str(end_time)))
@@ -119,13 +120,13 @@ def main():
     class_path = 'D:/LowPowerActionRecognition'
 
     # model can be one of lstm, lrcn, mlp, conv_3d, c3d
-    model = 'lstm'
+    model = 'lrcn'
     saved_model = None  # None or weights file
     class_limit = None  # int, can be 1-101 or None
     seq_length = 12
-    features = True  # set to true if using lstm
+    features = False  # set to true if using lstm
     batch_size = 32
-    nb_epoch = 1
+    nb_epoch = 50
     num_classes = 4
 
     # Chose images or features and image shape based on network.
