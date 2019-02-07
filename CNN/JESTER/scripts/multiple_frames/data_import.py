@@ -1,3 +1,7 @@
+'''
+To Do: clean up and improve code reuse
+'''
+
 import random
 import threading
 import os
@@ -213,7 +217,7 @@ class Dataset():
         """
 
         examples = {}
-
+        examples_copy = {}
         labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
 
         data = 'train' if train_test == 'train' else 'test'
@@ -224,41 +228,45 @@ class Dataset():
                 # populate dictionary with all examples with labels as keys
                 examples[label] = dat_files
 
+        examples_copy = examples.copy()
+
         while True:
 
             xs = []
             ys = []
 
+
             for label in labels:
-                # temp = random.sample(examples[label], int(batch_size/num_classes)) # ValueError: Sample larger than population
-                temp = [random.choice(examples[label]) for _ in range(int(batch_size/num_classes))] 
+
+                temp = []
+                # random.sample() proved to be problematic but it was because of lack of dict reset so might try again
+                temp = [random.choice(examples[label]) for _ in range(int(batch_size/num_classes))]
                 # retrieve actual data
                 for file in temp:
-                    single_X = np.load('{0}/n_{1}/{2}/{3}'.format(self.path, data, label, file))
-                    single_X_resh = single_X.reshape(12, 100, 176, 2)
-                    xs.append(single_X_resh)
+                    if file != '.DS_Store':
+                        single_X = np.load('{0}/n_{1}/{2}/{3}'.format(self.path, data, label, file))
+                        single_X_resh = single_X.reshape(12, 100, 176, 2)
+                        xs.append(single_X_resh)
 
-                    if 'Swiping_Down' in file:
-                        ys.append(0)
-                    elif 'Swiping_Up' in file:
-                        ys.append(1)
-                    elif 'Swiping_Left' in file:
-                        ys.append(2)
-                    elif 'Swiping_Right' in file:
-                        ys.append(3)
+                        if 'Swiping_Down' in file:
+                            ys.append(0)
+                        elif 'Swiping_Up' in file:
+                            ys.append(1)
+                        elif 'Swiping_Left' in file:
+                            ys.append(2)
+                        elif 'Swiping_Right' in file:
+                            ys.append(3)
 
                 # pop the temp elements from dict with given label as key
-                # print('length for {} (before popping):'.format(label), len(examples[label])) # sanity check
                 examples[label] = list(set(examples[label]) - set(temp))
-                # print('length for {} (after popping):'.format(label), len(examples[label])) # sanity check
+
+                # if examples is getting empty (toward the end of the epoch), regenerate it
+                if len(examples[label]) <= 32:
+                    examples = examples_copy.copy()
 
             # turn into numpy array
             X = np.array(xs)
             Y = np.array(ys)
-
-            # sanity check
-            # print(X.shape)
-            # print(Y.shape)
 
             # one-hot label conversion
             if categorical:
@@ -272,7 +280,7 @@ class Dataset():
 
 def main():
     # NOTE: Pulling up the N-JESTER (reduced) dataset
-    dataset_class_path = 'D:/LowPowerActionRecognition/CNN/JESTER/data'
+    dataset_class_path = '/Users/brunocalogero/Desktop/LowPowerActionRecognition/CNN/JESTER/data'
     data = Dataset(path=dataset_class_path)
 
     # NOTE: uncomment below for testing load n_jester function
@@ -311,8 +319,10 @@ def main():
 
     # NOTE: uncomment below for load generator testing
     # generator = data.load_generator('test')
+    # num = 0
     # for i in generator:
-    #     print(i)
+    #     print(num)
+    #     num = num + 1
 
 if __name__ == '__main__':
     main()

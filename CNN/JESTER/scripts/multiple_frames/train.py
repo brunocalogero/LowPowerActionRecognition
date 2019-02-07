@@ -98,7 +98,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         rm.model.fit_generator(
             generator=generator,
-            steps_per_epoch=470, # ~ 16725/32 = 522
+            steps_per_epoch=500, # ~ 16725/32 = 522
             epochs=nb_epoch,
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
