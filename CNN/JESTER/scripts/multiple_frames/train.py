@@ -43,7 +43,6 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
     if features:
         # get sequence feature data (post InceptionV3 with imagenet)
-
         start_time = dt.datetime.now()
         print('Start sequence data import {}'.format(str(start_time)))
 
@@ -55,7 +54,23 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         elapsed_time= end_time - start_time
         print('Elapsed load sequence data time {}'.format(str(elapsed_time)))
+
+    elif features == None:
+
+        start_time = dt.datetime.now()
+        print('Start sequence data import {}'.format(str(start_time)))
+
+        X_train, y_train = data.load_JESTER('train', categorical=True)
+        X_test, y_test = data.load_JESTER('test', categorical=True)
+
+        end_time = dt.datetime.now()
+        print('Stop load sequence data time {}'.format(str(end_time)))
+
+        elapsed_time= end_time - start_time
+        print('Elapsed load sequence data time {}'.format(str(elapsed_time)))
+
     else:
+
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
@@ -72,7 +87,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
     rm = ResearchModels(num_classes, model, seq_length, saved_model)
 
     # Fit!
-    if features:
+    if features or features == None:
         # used for LSTM (feauters loaded after InceptionV3)
         start_time = dt.datetime.now()
         print('Start sequence train data fit {}'.format(str(start_time)))
@@ -120,11 +135,11 @@ def main():
     class_path = 'D:/LowPowerActionRecognition'
 
     # model can be one of lstm, lrcn, mlp, conv_3d, c3d
-    model = 'lrcn'
+    model = 'mlp'
     saved_model = None  # None or weights file
     class_limit = None  # int, can be 1-101 or None
     seq_length = 12
-    features = False  # set to true if using lstm
+    features = True  # set to true if using lstm or mlp
     batch_size = 32
     nb_epoch = 50
     num_classes = 4
