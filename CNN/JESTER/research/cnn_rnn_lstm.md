@@ -46,3 +46,7 @@ citation: Khurram Soomro, Amir Roshan Zamir and Mubarak Shah, UCF101: A Dataset 
 - https://arxiv.org/pdf/1610.09513.pdf - Phased LSTM: Accelerating Recurrent Network Training for Long or Event-based Sequences (for future)
 
 - https://arxiv.org/abs/1512.00567 -  Inception V3, pre-trained on ImageNet.
+
+
+- https://blog.coast.ai/continuous-online-video-classification-with-tensorflow-inception-and-a-raspberry-pi-785c8b1e13e1 (about transfer learning, offline learning and retraining last layers of Inceoption + continuous online classification)
+- https://blog.coast.ai/continuous-video-classification-with-tensorflow-inception-and-recurrent-nets-250ba9ff6b85
