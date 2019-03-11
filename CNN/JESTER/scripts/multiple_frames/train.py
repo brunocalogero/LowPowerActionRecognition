@@ -1,3 +1,6 @@
+# Copyright: (c) 2019, Bruno Calogero <brunocalogero@hotmail.com>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 """
 Train our RNN on extracted features or images.
 """

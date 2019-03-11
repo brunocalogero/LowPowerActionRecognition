@@ -1,19 +1,21 @@
 # LowPowerActionRecognition
 Low-power  action recognition by coupling Silicon Retina to a Smartphone
 
+## Written by: BRUNO CALOGERO
+
 This will eventually hold all the setup information for the user to leverage our overall system.
 
 
-To use this repo: 
+## To use this repo:
 
 - First time you use this:
   - clone the repo: `git clone https://github.com/brunocalogero/LowPowerActionRecognition.git`
-  
+
 - Once you have cloned and you think your friends updated the codebase:
   - you need to pull their updates: `git pull --rebase`
 
 - If you made changes to your local project that you 'cloned' and you want to 'push' those changes to github so that the rest of the team can see your progress:
-  - you need to: `git status` to see what files you made changes on and that or not present on the github repo 
+  - you need to: `git status` to see what files you made changes on and that or not present on the github repo
   ```
   BCALOGER-M-J5VM:LowPowerActionRecognition bcaloger$ git status
   On branch master
@@ -57,3 +59,5 @@ To use this repo:
      9271fa1..ac347ba  master -> master
   ```
   Look into: git merge conflicts
+
+## File Structure

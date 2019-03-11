@@ -1,3 +1,5 @@
+# WRITTEN BY: BRUNO CALOGERO
+
 - https://www.youtube.com/watch?v=4ocbx9IeBMU - Deploying a machine learning model to the cloud using AWS Lambda - Dr. Benjamin Weigel (lambda + S3 + api gw + serverless)
 - https://bweigel.github.io/deploying_a_ml_service_to_aws_lambda.html - website for above preso
 - https://aws.amazon.com/blogs/aws/aws-lambda-adds-amazon-simple-queue-service-to-supported-event-sources/ - using SQS with lambda

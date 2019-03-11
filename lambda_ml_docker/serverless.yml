@@ -1,0 +1,66 @@
+# Copyright: (c) 2019, Bruno Calogero <brunocalogero@hotmail.com>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+service: mycoolservice # can be called however we like
+
+# what plugins to use (handy and main reason why serverless is cool)
+plugins:
+  - serverless-python-requirements
+provider:
+  name: aws
+  stage: dev
+  # also have the choice to use multiple runtimes (Java, Node, C# or python)
+  runtime: python3.6
+  region: eu-west-2
+
+  # tell serverless where to put our code/artifact
+  deploymentBucket:
+    name: modelhoster
+
+  # within AWS: policy, roles, users, groups.. etc (need to give rights to play with s3 bucket where we stored our models, so we need to tell serverless: hey I also want to access this bucket within role)
+  iamRoleStatements: # each policy statement has an effect
+      - Effect: Allow # whitelisting ourselves for certain services
+        Action:
+          - s3:GetObject
+          - s3:PutObject
+        Resource: # resource on which to do action on
+          - "arn:aws:s3:::modelhoster/*"  # allows to get object stored in bucket
+
+package:
+  exclude:
+    - '**/*'
+  include:
+    - 'app/**'
+
+custom:
+  # for the python requirements package, we want slim option to be enabled
+  pythonRequirements:
+    dockerizePip: true # set to false if `serverless deploy` is run inside a docker container
+    fileName: Pipfile
+    slim: true
+    slimPatternsAppendDefaults: false
+    slimPatterns:
+      - "**/*.DS_Store"
+      - "**/*.pyc"
+      - "**/external/*"
+      - "**/tensorflow/contrib/*"
+      - "**/tensorflow/include/unsupported/*"
+    dockerFile: Dockerfile
+    zip: true
+    noDeploy:
+      - pytest
+
+# tell serverless what kind of functions we want to deploy (you can have multiple functions within a service but for the moment only one)
+functions:
+  app: # name that serverless uses to create cloudformation resources when doing its magic
+    name: app # name displayed in aws console
+    description: cool lambda prediction function! woop woop
+    # aws and serverless don't know where to jump in code
+    handler: app.main.lambda_handler # cannot go arbitrarily deep
+    timeout: 30 # increase timeout to avoid api gateway timeout issues
+    # need an event (creates APIgateway cloudformation code to expose POST http request):
+    events:
+      - http:
+          path: handgestaction
+          method: POST
+      # SQS now supported as event trigger in AWS lambdas

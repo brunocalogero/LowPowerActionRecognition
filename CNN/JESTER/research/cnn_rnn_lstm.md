@@ -1,3 +1,5 @@
+# WRITTEN BY: BRUNO CALOGERO
+
 - https://arxiv.org/abs/1707.04555 -
 Temporal Modeling Approaches for Large-scale Youtube-8M Video Understanding (fast-forward LSTMs for video prediction generation)
 - https://arxiv.org/abs/1609.08675 - YouTube-8M: A Large-Scale Video Classification Benchmark

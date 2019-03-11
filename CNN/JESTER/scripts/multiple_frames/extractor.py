@@ -1,3 +1,6 @@
+# Copyright: (c) 2019, Bruno Calogero <brunocalogero@hotmail.com>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from keras.preprocessing import image
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 from keras.models import Model, load_model
