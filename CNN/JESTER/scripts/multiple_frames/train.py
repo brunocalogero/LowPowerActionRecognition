@@ -24,7 +24,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
           features=False, batch_size=32, nb_epoch=100, num_classes=4):
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
-        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + \
+        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + '-' + 'beheaded' + \
             '.{epoch:03d}-{val_loss:.3f}.hdf5'),
         verbose=1,
         save_best_only=True)
@@ -37,7 +37,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
     # Helper: Save results.
     timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + \
+    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + '-beheaded-' +\
         str(timestamp) + '.log'))
 
 
@@ -49,8 +49,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start sequence data import {}'.format(str(start_time)))
 
-        X_train, y_train = data.load_JESTER_sequences('train', categorical=True)
-        X_test, y_test = data.load_JESTER_sequences('test', categorical=True)
+        X_train, y_train = data.load_JESTER_sequences('train_beheaded', categorical=True)
+        X_test, y_test = data.load_JESTER_sequences('test_beheaded', categorical=True)
 
         end_time = dt.datetime.now()
         print('Stop load sequence data time {}'.format(str(end_time)))
@@ -63,8 +63,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start sequence data import {}'.format(str(start_time)))
 
-        X_train, y_train = data.load_JESTER('train', categorical=True)
-        X_test, y_test = data.load_JESTER('test', categorical=True)
+        X_train, y_train = data.load_JESTER('train_beheaded', categorical=True)
+        X_test, y_test = data.load_JESTER('test_beheaded', categorical=True)
 
         end_time = dt.datetime.now()
         print('Stop load sequence data time {}'.format(str(end_time)))
@@ -77,8 +77,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
-        generator = data.load_generator('train')
-        test_generator = data.load_generator('test')
+        generator = data.load_generator('test_beheaded')
+        test_generator = data.load_generator('test_beheaded')
 
         end_time = dt.datetime.now()
         print('Stop load data time {}'.format(str(end_time)))
@@ -138,14 +138,14 @@ def main():
     class_path = 'D:/LowPowerActionRecognition'
 
     # model can be one of lstm, lrcn, mlp, conv_3d, c3d
-    model = 'mlp'
+    model = 'lrcn'
     saved_model = None  # None or weights file
-    class_limit = None  # int, can be 1-101 or None
+    class_limit = None
     seq_length = 12
-    features = True  # set to true if using lstm or mlp
+    features = False  # set to true if using lstm or mlp
     batch_size = 32
     nb_epoch = 50
-    num_classes = 4
+    num_classes = 4 # change if more or less classes
 
     # Chose images or features and image shape based on network.
     if model in ['conv_3d', 'c3d', 'lrcn']:

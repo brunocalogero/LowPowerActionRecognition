@@ -106,20 +106,39 @@ class Dataset():
         """
 
         # Set defaults.
-        data = 'train' if train_test == 'train' else 'test'
+        if (train_test == 'train') or (train_test == 'test'):
+            data = 'train' if train_test == 'train' else 'test'
+            train_testy = train_test
+        else:
+            print('Caution: User has selected a train or test set that is not named n_train or n_test')
+            print('User has selected: n_{}'.format(train_test))
+            data = train_test
+
+            if 'train' in train_test:
+                train_testy = 'train'
+            elif 'test' in train_test:
+                train_testy = 'test'
 
         # get the model.
         model = Extractor()
 
         # setting up progress bar
-        total_num = 16725 if train_test == 'train' else 2008
+        if '10' in train_test:
+            total_num = 35108 if train_testy == 'train' else 4817
+        else:
+            total_num = 16725 if train_testy == 'train' else 2008
         # Loop through data.
         pbar = tqdm(total=total_num)
 
         xs = []
         ys = []
 
-        labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
+        if '10' in train_test:
+            labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up',
+                      'Sliding_Two_Fingers_Down', 'Sliding_Two_Fingers_Left', 'Sliding_Two_Fingers_Right', 'Sliding_Two_Fingers_Up',
+                      'Zooming_In_With_Two_Fingers', 'Zooming_Out_With_Two_Fingers']
+        else:
+            labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
 
         for label in labels:
             # print('{0}/n_{1}/{2}'.format(self.path, data, label))
@@ -141,14 +160,36 @@ class Dataset():
 
                             xs.append(single_X_resh)
 
-                            if label == 'Swiping_Down':
-                                ys.append(0)
-                            elif label == 'Swiping_Up':
-                                ys.append(1)
-                            elif label == 'Swiping_Left':
-                                ys.append(2)
-                            elif label == 'Swiping_Right':
-                                ys.append(3)
+                            if  '10' in train_test:
+                                if label == 'Swiping_Down':
+                                    ys.append(0)
+                                elif label == 'Swiping_Up':
+                                    ys.append(1)
+                                elif label == 'Swiping_Left':
+                                    ys.append(2)
+                                elif label == 'Swiping_Right':
+                                    ys.append(3)
+                                elif label == 'Sliding_Two_Fingers_Down':
+                                    ys.append(4)
+                                elif label == 'Sliding_Two_Fingers_Left':
+                                    ys.append(5)
+                                elif label == 'Sliding_Two_Fingers_Right':
+                                    ys.append(6)
+                                elif label == 'Sliding_Two_Fingers_Up':
+                                    ys.append(7)
+                                elif label == 'Zooming_In_With_Two_Fingers':
+                                    ys.append(8)
+                                elif label == 'Zooming_Out_With_Two_Fingers':
+                                    ys.append(9)
+                            else:
+                                if label == 'Swiping_Down':
+                                    ys.append(0)
+                                elif label == 'Swiping_Up':
+                                    ys.append(1)
+                                elif label == 'Swiping_Left':
+                                    ys.append(2)
+                                elif label == 'Swiping_Right':
+                                    ys.append(3)
 
                             # Now loop through and extract features to build the sequence.
                             sequence = []
@@ -162,7 +203,7 @@ class Dataset():
 
         pbar.close()
         Y = np.array(ys)
-        label_path = os.path.join(self.path, 'sequences', '{}'.format(data), 'squence_labels')
+        label_path = os.path.join(self.path, 'sequences', '{}'.format(data), 'sequence_labels')
         np.save(label_path, Y)
 
 
@@ -174,7 +215,12 @@ class Dataset():
         xs = []
         ys = []
 
-        data = 'train' if train_test == 'train' else 'test'
+        if (train_test == 'train') or (train_test == 'test'):
+            data = 'train' if train_test == 'train' else 'test'
+        else:
+            print('Caution: User has selected a train or test set that is not named n_train or n_test')
+            print('User has selected: n_{}'.format(train_test))
+            data = train_test
 
         for (root, dirs, dat_files) in os.walk('{0}/sequences/{1}'.format(self.path, data)):
             for file in dat_files:
@@ -183,14 +229,36 @@ class Dataset():
                     single_X = np.load('{0}/sequences/{1}/{2}'.format(self.path, data, file)) # shape: (12, 2048)
                     xs.append(single_X)
 
-                    if 'Swiping_Down' in file:
-                        ys.append(0)
-                    elif 'Swiping_Up' in file:
-                        ys.append(1)
-                    elif 'Swiping_Left' in file:
-                        ys.append(2)
-                    elif 'Swiping_Right' in file:
-                        ys.append(3)
+                    if  '10' in train_test:
+                        if 'Swiping_Down' in file:
+                            ys.append(0)
+                        elif 'Swiping_Up' in file:
+                            ys.append(1)
+                        elif 'Swiping_Left' in file:
+                            ys.append(2)
+                        elif 'Swiping_Right' in file:
+                            ys.append(3)
+                        elif 'Sliding_Two_Fingers_Down' in file:
+                            ys.append(4)
+                        elif 'Sliding_Two_Fingers_Left' in file:
+                            ys.append(5)
+                        elif 'Sliding_Two_Fingers_Right' in file:
+                            ys.append(6)
+                        elif 'Sliding_Two_Fingers_Up' in file:
+                            ys.append(7)
+                        elif 'Zooming_In_With_Two_Fingers' in file:
+                            ys.append(8)
+                        elif 'Zooming_Out_With_Two_Fingers' in file:
+                            ys.append(9)
+                    else:
+                        if 'Swiping_Down' in file:
+                            ys.append(0)
+                        elif 'Swiping_Up' in file:
+                            ys.append(1)
+                        elif 'Swiping_Left' in file:
+                            ys.append(2)
+                        elif 'Swiping_Right' in file:
+                            ys.append(3)
 
         X = np.array(xs)
         Y = np.array(ys)
@@ -221,9 +289,20 @@ class Dataset():
 
         examples = {}
         examples_copy = {}
-        labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
 
-        data = 'train' if train_test == 'train' else 'test'
+        if '10' in train_test:
+            labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up',
+                      'Sliding_Two_Fingers_Down', 'Sliding_Two_Fingers_Left', 'Sliding_Two_Fingers_Right', 'Sliding_Two_Fingers_Up',
+                      'Zooming_In_With_Two_Fingers', 'Zooming_Out_With_Two_Fingers']
+        else:
+            labels = ['Swiping_Down', 'Swiping_Left', 'Swiping_Right', 'Swiping_Up']
+
+        if (train_test == 'train') or (train_test == 'test'):
+            data = 'train' if train_test == 'train' else 'test'
+        else:
+            print('Caution: User has selected a train or test set that is not named n_train or n_test')
+            print('User has selected: n_{}'.format(train_test))
+            data = train_test
 
         for label in labels:
             # NOTE: make sure that your data files do not contain '.DS_Store'
@@ -251,14 +330,36 @@ class Dataset():
                         single_X_resh = single_X.reshape(12, 100, 176, 2)
                         xs.append(single_X_resh)
 
-                        if 'Swiping_Down' in file:
-                            ys.append(0)
-                        elif 'Swiping_Up' in file:
-                            ys.append(1)
-                        elif 'Swiping_Left' in file:
-                            ys.append(2)
-                        elif 'Swiping_Right' in file:
-                            ys.append(3)
+                        if  '10' in train_test:
+                            if 'Swiping_Down' in file:
+                                ys.append(0)
+                            elif 'Swiping_Up' in file:
+                                ys.append(1)
+                            elif 'Swiping_Left' in file:
+                                ys.append(2)
+                            elif 'Swiping_Right' in file:
+                                ys.append(3)
+                            elif 'Sliding_Two_Fingers_Down' in file:
+                                ys.append(4)
+                            elif 'Sliding_Two_Fingers_Left' in file:
+                                ys.append(5)
+                            elif 'Sliding_Two_Fingers_Right' in file:
+                                ys.append(6)
+                            elif 'Sliding_Two_Fingers_Up' in file:
+                                ys.append(7)
+                            elif 'Zooming_In_With_Two_Fingers' in file:
+                                ys.append(8)
+                            elif 'Zooming_Out_With_Two_Fingers' in file:
+                                ys.append(9)
+                        else:
+                            if 'Swiping_Down' in file:
+                                ys.append(0)
+                            elif 'Swiping_Up' in file:
+                                ys.append(1)
+                            elif 'Swiping_Left' in file:
+                                ys.append(2)
+                            elif 'Swiping_Right' in file:
+                                ys.append(3)
 
                 # pop the temp elements from dict with given label as key
                 examples[label] = list(set(examples[label]) - set(temp))
@@ -283,7 +384,7 @@ class Dataset():
 
 def main():
     # NOTE: Pulling up the N-JESTER (reduced) dataset
-    dataset_class_path = '/Users/brunocalogero/Desktop/LowPowerActionRecognition/CNN/JESTER/data'
+    dataset_class_path = 'D:\LowPowerActionRecognition\CNN\JESTER\data'
     data = Dataset(path=dataset_class_path)
 
     # NOTE: uncomment below for testing load n_jester function
@@ -312,14 +413,14 @@ def main():
     # print(Y_test[6])
 
     # NOTE: uncomment below for feature generation
-    # data.load_JESTER_features('test')
+    data.load_JESTER_features('train_10_class')
 
     # NOTE: uncomment below for feature sequence loading testing
     # X_test, y_test = data.load_JESTER_sequences('train')
     #
     # print('shape for x_test:', X_test.shape)
     # print('shape for y_test:', y_test.shape)
-
+    #
     # NOTE: uncomment below for load generator testing
     # generator = data.load_generator('test')
     # num = 0
