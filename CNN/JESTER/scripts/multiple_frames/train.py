@@ -72,13 +72,13 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         elapsed_time= end_time - start_time
         print('Elapsed load sequence data time {}'.format(str(elapsed_time)))
 
-    else:
+    elif features == False:
 
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
-        generator = data.load_generator('test_10_class')
-        test_generator = data.load_generator('test_10_class')
+        generator = data.load_generator('test_10_class', batch_size=batch_size, num_classes=num_classes)
+        test_generator = data.load_generator('test_10_class', batch_size=batch_size, num_classes=num_classes)
 
         end_time = dt.datetime.now()
         print('Stop load data time {}'.format(str(end_time)))
@@ -109,19 +109,19 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         elapsed_time= end_time - start_time
         print('Elapsed sequence train data fitting time {}'.format(str(elapsed_time)))
-    else:
+    elif features == False:
         # Use standard fit (all other research models)
         start_time = dt.datetime.now()
         print('Start train data fit {}'.format(str(start_time)))
 
         rm.model.fit_generator(
             generator=generator,
-            steps_per_epoch=500, # ~ 16725/32 = 522
+            steps_per_epoch=2200, # ~ 16725/32 = 522 and 35108/16 +-= 2200
             epochs=nb_epoch,
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
             validation_data=test_generator,
-            validation_steps=50, # ~ 2008/32 = 62.75
+            validation_steps=305, # ~ 2008/32 = 62.75 and 4817/16 -+= 305
             workers=4)
 
         end_time = dt.datetime.now()
@@ -138,12 +138,12 @@ def main():
     class_path = 'D:/LowPowerActionRecognition'
 
     # model can be one of lstm, lrcn, mlp, conv_3d, c3d
-    model = 'mlp'
+    model = 'lrcn'
     saved_model = None  # None or weights file
     class_limit = None
     seq_length = 12
-    features = True  # set to true if using lstm or mlp
-    batch_size = 32
+    features = False  # set to true if using lstm or mlp
+    batch_size = 16
     nb_epoch = 50
     num_classes = 10 # change if more or less classes
 
