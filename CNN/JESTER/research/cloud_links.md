@@ -21,3 +21,5 @@ https://towardsdatascience.com/serving-tensorflow-models-serverless-6a39614094ff
 https://hackernoon.com/exploring-the-aws-lambda-deployment-limits-9a8384b0bec3 - LAMBDA LIMITS AND HOW TO FOOL
 https://iplayer.engineering/evaluating-tensorflow-models-in-aws-lambda-c0e06cf23d87 - LAMBDA LIMITS AND SOLUTIONS
 https://www.npmjs.com/package/serverless-python-requirements - dealing with large dependencies and option to deal with it
+
+https://www.oreilly.com/learning/how-do-i-invoke-a-lambda-from-another-lambda-in-aws - invoking lambda from another lambda.

@@ -14,16 +14,16 @@ import numpy
 import boto3
 
 def get_model():
-    # to access model from S3 we use boto3
-    bucket = boto3.resource("s3").Bucket("modelhoster") # uselss fact: boto is the name of amazon's river dolphin
+    # Access model from S3 using boto3
+    bucket = boto3.resource("s3").Bucket("modelhoster")
     with BytesIO() as modelfo:
-        bucket.download_fileobj(Key='model/lrcn_model.hdf5', Fileobj=modelfo) # download file into file object that we created above
-        # now we deserialize the model
+        # Download file into file object that we created above
+        bucket.download_fileobj(Key='model/lrcn_model.hdf5', Fileobj=modelfo)
+        # Deserialize the model
         model = tf.keras.models.load_model(modelfo)
     return model
 
 def predict(event):
-    print(event)
     json_data = json.loads(event['body'])
     body = json_data["body"]
     data = numpy.asarray(body)
