@@ -15,8 +15,8 @@ import datetime as dt
 from sklearn.utils import shuffle
 from keras.utils import to_categorical
 
-from extractor import Extractor
-from tqdm import tqdm
+# from extractor import Extractor
+# from tqdm import tqdm
 
 
 class threadsafe_iterator:
@@ -281,7 +281,7 @@ class Dataset():
         return X_data, Y_data
 
     @threadsafe_generator
-    def load_generator(self, train_test, batch_size=32, num_classes=4, categorical=True):
+    def load_generator(self, train_test, batch_size=32, num_classes=4, categorical=True, regeneration=True):
         """
         This class method exports batches of data in the form of generator by yielding.
         Used for fit_generator.
@@ -365,9 +365,12 @@ class Dataset():
                 examples[label] = list(set(examples[label]) - set(temp))
 
                 # if examples is getting empty (toward the end of the epoch), regenerate it
-                if len(examples[label]) <= 32:
-                    examples = examples_copy.copy()
-
+                if regeneration:
+                    if len(examples[label]) <= 32:
+                        examples = examples_copy.copy()
+                else:
+                    if len(examples[label]) <= 32:
+                        break
             # turn into numpy array
             X = np.array(xs)
             Y = np.array(ys)
@@ -413,7 +416,7 @@ def main():
     # print(Y_test[6])
 
     # NOTE: uncomment below for feature generation
-    data.load_JESTER_features('train_10_class')
+    # data.load_JESTER_features('train_10_class')
 
     # NOTE: uncomment below for feature sequence loading testing
     # X_test, y_test = data.load_JESTER_sequences('train')

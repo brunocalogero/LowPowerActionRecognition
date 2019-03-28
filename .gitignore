@@ -12,3 +12,4 @@ CNN/JESTER/data/data_file.csv
 checkpoints
 tf_logs
 Photoshop
+autoencoder/models

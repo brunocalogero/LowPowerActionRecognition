@@ -24,7 +24,7 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
           features=False, batch_size=32, nb_epoch=100, num_classes=4):
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
-        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + '-' + '10_class' + \
+        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + '-' + 'auto_4_class' + \
             '.{epoch:03d}-{val_loss:.3f}.hdf5'),
         verbose=1,
         save_best_only=True)
@@ -37,11 +37,11 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
     # Helper: Save results.
     timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + '-10_class-' +\
+    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + 'auto_4_class' +\
         str(timestamp) + '.log'))
 
 
-    dataset_class_path = '{0}/CNN/JESTER/data'.format(class_path)
+    dataset_class_path = '{0}/autoencoder/data'.format(class_path)
     data = Dataset(path=dataset_class_path)
 
     if features:
@@ -49,8 +49,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start sequence data import {}'.format(str(start_time)))
 
-        X_train, y_train = data.load_JESTER_sequences('train_10_class', categorical=True)
-        X_test, y_test = data.load_JESTER_sequences('test_10_class', categorical=True)
+        X_train, y_train = data.load_JESTER_sequences('train', categorical=True)
+        X_test, y_test = data.load_JESTER_sequences('test', categorical=True)
 
         end_time = dt.datetime.now()
         print('Stop load sequence data time {}'.format(str(end_time)))
@@ -63,8 +63,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start sequence data import {}'.format(str(start_time)))
 
-        X_train, y_train = data.load_JESTER('train_10_class', categorical=True)
-        X_test, y_test = data.load_JESTER('test_10_class', categorical=True)
+        X_train, y_train = data.load_JESTER('train', categorical=True)
+        X_test, y_test = data.load_JESTER('test', categorical=True)
 
         end_time = dt.datetime.now()
         print('Stop load sequence data time {}'.format(str(end_time)))
@@ -77,8 +77,8 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
         start_time = dt.datetime.now()
         print('Start data import {}'.format(str(start_time)))
 
-        generator = data.load_generator('test_10_class', batch_size=batch_size, num_classes=num_classes)
-        test_generator = data.load_generator('test_10_class', batch_size=batch_size, num_classes=num_classes)
+        generator = data.load_generator('train', batch_size=batch_size, num_classes=num_classes)
+        test_generator = data.load_generator('test', batch_size=batch_size, num_classes=num_classes)
 
         end_time = dt.datetime.now()
         print('Stop load data time {}'.format(str(end_time)))
@@ -116,12 +116,12 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         rm.model.fit_generator(
             generator=generator,
-            steps_per_epoch=2200, # ~ 16725/32 = 522 and 35108/16 +-= 2200
+            steps_per_epoch=515, # ~ 16725/32 = 522 and 35108/16 +-= 2200
             epochs=nb_epoch,
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
             validation_data=test_generator,
-            validation_steps=305, # ~ 2008/32 = 62.75 and 4817/16 -+= 305
+            validation_steps=58, # ~ 2008/32 = 62.75 and 4817/16 -+= 305
             workers=4)
 
         end_time = dt.datetime.now()
@@ -145,7 +145,7 @@ def main():
     features = False  # set to true if using lstm or mlp
     batch_size = 16
     nb_epoch = 50
-    num_classes = 10 # change if more or less classes
+    num_classes = 4 # change if more or less classes
 
     # Chose images or features and image shape based on network.
     if model in ['conv_3d', 'c3d', 'lrcn']:
