@@ -21,19 +21,50 @@ def save_single_example(example, label, train_test):
 
     global numy
 
-    if label == 0:
-        numy = numy + 1
-        np.save('./data/n_{0}/Swiping_Down/{1};Swiping_Down_decoded.npy'.format(train_test, numy), example)
-    elif label == 1:
-        numy = numy + 1
-        np.save('./data/n_{0}/Swiping_Up/{1};Swiping_Up_decoded.npy'.format(train_test, numy), example)
-    elif label == 2:
-        numy = numy + 1
-        np.save('./data/n_{0}/Swiping_Left/{1};Swiping_Left_decoded.npy'.format(train_test, numy), example)
-    elif label == 3:
-        numy = numy + 1
-        np.save('./data/n_{0}/Swiping_Right/{1};Swiping_Right_decoded.npy'.format(train_test, numy), example)
-
+    if '10' in train_test:
+        if label == 0:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Down/{1};Swiping_Down_decoded.npy'.format(train_test, numy), example)
+        elif label == 1:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Up/{1};Swiping_Up_decoded.npy'.format(train_test, numy), example)
+        elif label == 2:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Left/{1};Swiping_Left_decoded.npy'.format(train_test, numy), example)
+        elif label == 3:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Right/{1};Swiping_Right_decoded.npy'.format(train_test, numy), example)
+        elif label == 4:
+            numy = numy + 1
+            np.save('./data/n_{0}/Sliding_Two_Fingers_Down/{1};Sliding_Two_Fingers_Down_decoded.npy'.format(train_test, numy), example)
+        elif label == 5:
+            numy = numy + 1
+            np.save('./data/n_{0}/Sliding_Two_Fingers_Left/{1};Sliding_Two_Fingers_Left_decoded.npy'.format(train_test, numy), example)
+        elif label == 6:
+            numy = numy + 1
+            np.save('./data/n_{0}/Sliding_Two_Fingers_Right/{1};Sliding_Two_Fingers_Right_decoded.npy'.format(train_test, numy), example)
+        elif label == 7:
+            numy = numy + 1
+            np.save('./data/n_{0}/Sliding_Two_Fingers_Up/{1};Sliding_Two_Fingers_Up_decoded.npy'.format(train_test, numy), example)
+        elif label == 8:
+            numy = numy + 1
+            np.save('./data/n_{0}/Zooming_In_With_Two_Fingers/{1};Zooming_In_With_Two_Fingers_decoded.npy'.format(train_test, numy), example)
+        elif label == 9:
+            numy = numy + 1
+            np.save('./data/n_{0}/Zooming_Out_With_Two_Fingers/{1};Zooming_Out_With_Two_Fingers_decoded.npy'.format(train_test, numy), example)
+    else:
+        if label == 0:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Down/{1};Swiping_Down_decoded.npy'.format(train_test, numy), example)
+        elif label == 1:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Up/{1};Swiping_Up_decoded.npy'.format(train_test, numy), example)
+        elif label == 2:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Left/{1};Swiping_Left_decoded.npy'.format(train_test, numy), example)
+        elif label == 3:
+            numy = numy + 1
+            np.save('./data/n_{0}/Swiping_Right/{1};Swiping_Right_decoded.npy'.format(train_test, numy), example)
 
 def generate_decoded_data(encoder, decoder, generator, train_test):
     # generator returns tuple: ( (32, 12, 100, 176, 2) , (32, 4) )
@@ -74,25 +105,32 @@ def generate_decoded_data(encoder, decoder, generator, train_test):
             # ~ 16725/32 = 522
             if num == 520:
                 break
+        elif train_test == 'test_10_class':
+            print(num)
+            if num == 158: # depends on what generator is returning be carefull
+                break
+        elif train_test == 'train_10_class':
+            if num == 1206: # depends on what generator is returning be carefull
+                break
 
 def main():
 
     # NOTE: user selects flag type
-    train_test = 'train'
+    train_test = 'test_10_class'
 
     dataset_class_path = 'D:\LowPowerActionRecognition\CNN\JESTER\data'
 
     data = Dataset(path=dataset_class_path)
 
-    generator = data.load_generator(train_test, categorical=False, regeneration=False)
+    generator = data.load_generator(train_test, batch_size=30, num_classes=10, categorical=False, regeneration=True)
 
     # uncomment for sanity check of 32 batch-yielding generator
     # num = 0
     # for i in generator:
     #     print(i[0].shape)
 
-    encoder = load_model('./models/encoder_Chingis_4.h5', custom_objects={'batch_size': 1,'latent_dim': 30,'epsilon_std':0.001})
-    decoder = load_model('./models/decoder_Chingis_4.h5', custom_objects={'batch_size': 1,'latent_dim': 30,'epsilon_std':0.001})
+    encoder = load_model('./models/encoder_10class_7.h5', custom_objects={'batch_size': 1,'latent_dim': 50,'epsilon_std':0.001})
+    decoder = load_model('./models/decoder_10class_7.h5', custom_objects={'batch_size': 1,'latent_dim': 50,'epsilon_std':0.001})
 
     # encoder.summary()
     # decoder.summary()

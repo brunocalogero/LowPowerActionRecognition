@@ -281,7 +281,7 @@ class Dataset():
         return X_data, Y_data
 
     @threadsafe_generator
-    def load_generator(self, train_test, batch_size=32, num_classes=4, categorical=True, regeneration=True):
+    def load_generator(self, train_test, batch_size=32, num_classes=10, categorical=True, regeneration=True):
         """
         This class method exports batches of data in the form of generator by yielding.
         Used for fit_generator.
@@ -323,6 +323,7 @@ class Dataset():
                 temp = []
                 # random.sample() proved to be problematic but it was because of lack of dict reset so might try again
                 temp = [random.choice(examples[label]) for _ in range(int(batch_size/num_classes))]
+
                 # retrieve actual data
                 for file in temp:
                     if file != '.DS_Store':
@@ -366,10 +367,17 @@ class Dataset():
 
                 # if examples is getting empty (toward the end of the epoch), regenerate it
                 if regeneration:
-                    if len(examples[label]) <= 32:
-                        examples = examples_copy.copy()
+                    # fix zooming out with two fingers problem
+                    if label == 'Zooming_Out_With_Two_Fingers':
+                        if len(examples[label]) <= 16:
+                            print('Zooming out causing issues')
+                            examples.update({label: examples_copy[label]})
+                    else:
+                        if len(examples[label]) <= 16:
+                            print('Regenerating other labels')
+                            examples = examples_copy.copy()
                 else:
-                    if len(examples[label]) <= 32:
+                    if len(examples[label]) <= 16:
                         break
             # turn into numpy array
             X = np.array(xs)
@@ -425,11 +433,11 @@ def main():
     # print('shape for y_test:', y_test.shape)
     #
     # NOTE: uncomment below for load generator testing
-    # generator = data.load_generator('test')
+    # generator = data.load_generator('test_10_class')
     # num = 0
     # for i in generator:
-    #     print(num)
     #     num = num + 1
+    #     print(num)
 
 if __name__ == '__main__':
     main()
