@@ -368,14 +368,14 @@ class Dataset():
                 # if examples is getting empty (toward the end of the epoch), regenerate it
                 if regeneration:
                     # fix zooming out with two fingers problem
-                    if label == 'Zooming_Out_With_Two_Fingers':
-                        if len(examples[label]) <= 16:
-                            print('Zooming out causing issues')
-                            examples.update({label: examples_copy[label]})
-                    else:
-                        if len(examples[label]) <= 16:
-                            print('Regenerating other labels')
-                            examples = examples_copy.copy()
+                    # if label == 'Zooming_Out_With_Two_Fingers':
+                    #     if len(examples[label]) <= 16:
+                    #         print('Zooming out causing issues')
+                    #         examples.update({label: examples_copy[label]})
+                    # else:
+                    if len(examples[label]) <= 16:
+                        print('Regenerating other labels')
+                        examples = examples_copy.copy()
                 else:
                     if len(examples[label]) <= 16:
                         break
