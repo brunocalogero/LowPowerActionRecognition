@@ -24,24 +24,24 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
           features=False, batch_size=32, nb_epoch=50, num_classes=10):
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
-        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + '-' + '10_class_v3' + \
+        filepath=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'checkpoints', model + '-' + data_type + '-' + 'autoencoder_10_class_v2_good_data' + \
             '.{epoch:03d}-{val_loss:.3f}.hdf5'),
         verbose=1,
         save_best_only=True)
 
     # Helper: TensorBoard
-    tb = TensorBoard(log_dir=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'tf_logs', model))
+    tb = TensorBoard(log_dir=os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'tf_logs', model + '_' + 'autoencoder_10_class_v2_good_data'))
 
     # Helper: Stop when we stop learning.
     early_stopper = EarlyStopping(patience=5)
 
     # Helper: Save results.
     timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + '10_class_v3' +\
+    csv_logger = CSVLogger(os.path.join(class_path, 'CNN', 'JESTER', 'scripts', 'multiple_frames', 'result_logs', model + '-' + 'training-' + 'autoencoder_10_class_v2_good_data' +\
         str(timestamp) + '.log'))
 
 
-    dataset_class_path = '{0}/CNN/JESTER/data'.format(class_path)
+    dataset_class_path = '{0}/autoencoder/data'.format(class_path)
     data = Dataset(path=dataset_class_path)
 
     if features:
@@ -116,12 +116,12 @@ def train(data_type, seq_length, model, class_path, saved_model=None,
 
         rm.model.fit_generator(
             generator=generator,
-            steps_per_epoch=1200, # ~ 16725/32 = 522 and 35108/16 +-= 2200 and (3619(lowest examples num for class)*10)/30=1206
+            steps_per_epoch=1300, # ~ 16725/32 = 522 and 35108/16 +-= 2200 and (3619(lowest examples num for class)*10)/30=1206 and 4084*10/30=1361
             epochs=nb_epoch,
             verbose=1,
             callbacks=[tb, early_stopper, csv_logger, checkpointer],
             validation_data=test_generator,
-            validation_steps=155, # ~ 2008/32 = 62.75 and 4817/16 -+= 305 and (474(lowest examples num for class)*10)/30=158
+            validation_steps=155, # ~ 2008/32 = 62.75 and 4817/16 -+= 305 and (474(lowest examples num for class)*10)/30=158 and 486*10/30=162
             workers=4)
 
         end_time = dt.datetime.now()
@@ -143,7 +143,7 @@ def main():
     class_limit = None
     seq_length = 12
     features = False  # set to true if using lstm or mlp
-    batch_size = 32
+    batch_size = 30
     nb_epoch = 50
     num_classes = 10 # change if more or less classes
 

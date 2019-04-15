@@ -107,10 +107,10 @@ def generate_decoded_data(encoder, decoder, generator, train_test):
                 break
         elif train_test == 'test_10_class':
             print(num)
-            if num == 158: # depends on what generator is returning be carefull
+            if num == 155: # depends on what generator is returning be carefull
                 break
         elif train_test == 'train_10_class':
-            if num == 1206: # depends on what generator is returning be carefull
+            if num == 1200: # depends on what generator is returning be carefull
                 break
 
 def main():
@@ -122,7 +122,7 @@ def main():
 
     data = Dataset(path=dataset_class_path)
 
-    generator = data.load_generator(train_test, batch_size=30, num_classes=10, categorical=False, regeneration=True)
+    generator = data.load_generator(train_test, batch_size=30, num_classes=10, categorical=False, regeneration=False)
 
     # uncomment for sanity check of 32 batch-yielding generator
     # num = 0

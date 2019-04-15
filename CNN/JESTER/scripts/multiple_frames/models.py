@@ -50,8 +50,8 @@ class ResearchModels():
             self.input_shape = (seq_length, features_length)
             self.model = self.lstm()
         elif model == 'lrcn':
-            print("Loading CNN-LSTM model.")
-            self.input_shape = (seq_length, 100, 176, 2)
+            print("Loading CNN-LRCN model.")
+            self.input_shape = (seq_length, 100, 176, 2) # CHANGE to 2 for neuro data
             self.model = self.lrcn()
         elif model == 'mlp':
             print("Loading simple MLP.")

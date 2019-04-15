@@ -281,7 +281,7 @@ class Dataset():
         return X_data, Y_data
 
     @threadsafe_generator
-    def load_generator(self, train_test, batch_size=32, num_classes=10, categorical=True, regeneration=True):
+    def load_generator(self, train_test, batch_size=30, num_classes=10, categorical=True, regeneration=True):
         """
         This class method exports batches of data in the form of generator by yielding.
         Used for fit_generator.
@@ -299,14 +299,19 @@ class Dataset():
 
         if (train_test == 'train') or (train_test == 'test'):
             data = 'train' if train_test == 'train' else 'test'
-        else:
+        elif 'n_' in train_test:
             print('Caution: User has selected a train or test set that is not named n_train or n_test')
             print('User has selected: n_{}'.format(train_test))
+            data = train_test
+        else:
+            print('Caution: User has selected a train or test set that is not named train or test')
+            print('User has selected: {}'.format(train_test))
             data = train_test
 
         for label in labels:
             # NOTE: make sure that your data files do not contain '.DS_Store'
-            for (root, dirs, dat_files) in os.walk('{0}/n_{1}/{2}'.format(self.path, data, label)):
+            for (root, dirs, dat_files) in os.walk('{0}/n_{1}/{2}'.format(self.path, data, label)): # uncomment for neuro data
+            # for (root, dirs, dat_files) in os.walk('{0}/{1}/{2}'.format(self.path, data, label)):
                 # populate dictionary with all examples with labels as keys
                 examples[label] = dat_files
 
@@ -327,8 +332,10 @@ class Dataset():
                 # retrieve actual data
                 for file in temp:
                     if file != '.DS_Store':
-                        single_X = np.load('{0}/n_{1}/{2}/{3}'.format(self.path, data, label, file))
+                        single_X = np.load('{0}/n_{1}/{2}/{3}'.format(self.path, data, label, file)) # uncomment for neuro data
                         single_X_resh = single_X.reshape(12, 100, 176, 2)
+                        # single_X = np.load('{0}/{1}/{2}/{3}'.format(self.path, data, label, file))
+                        # single_X_resh = single_X.reshape(12, 100, 176, 3)
                         xs.append(single_X_resh)
 
                         if  '10' in train_test:
@@ -433,11 +440,13 @@ def main():
     # print('shape for y_test:', y_test.shape)
     #
     # NOTE: uncomment below for load generator testing
-    # generator = data.load_generator('test_10_class')
-    # num = 0
-    # for i in generator:
-    #     num = num + 1
-    #     print(num)
+    generator = data.load_generator('test_10_class')
+    num = 0
+    for (i, y) in generator:
+        print (y.shape)
+        # print('{0},{1}'.format(i.shape, y.shape))
+        num = num + 1
+        print(num)
 
 if __name__ == '__main__':
     main()
