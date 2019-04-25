@@ -1,5 +1,5 @@
 # LowPowerActionRecognition
-Low-power  action recognition by coupling Silicon Retina to a Smartphone
+Server-less Low-Power Event-driven Action Recognition with Neural Networks
 
 ## Written by: BRUNO CALOGERO
 
