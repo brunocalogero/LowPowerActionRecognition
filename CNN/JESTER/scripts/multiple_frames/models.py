@@ -51,7 +51,7 @@ class ResearchModels():
             self.model = self.lstm()
         elif model == 'lrcn':
             print("Loading CNN-LRCN model.")
-            self.input_shape = (seq_length, 100, 176, 3) # CHANGE to 2 for neuro data
+            self.input_shape = (seq_length, 100, 176, 2) # CHANGE to 2 for neuro data
             self.model = self.lrcn()
         elif model == 'mlp':
             print("Loading simple MLP.")
@@ -59,7 +59,7 @@ class ResearchModels():
             self.model = self.mlp()
         elif model == 'conv_3d':
             print("Loading Conv3D")
-            self.input_shape = (seq_length, 100, 176, 2)
+            self.input_shape = (seq_length, 100, 176, 3)
             self.model = self.conv_3d()
         elif model == 'c3d':
             print("Loading C3D")
